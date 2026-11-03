@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Talk2Jyotisha.com</title>
+  <meta name="description"
+    content="Talk2Jyotisha.com - Astrology guidance for Career, Marriage, Health, and Business Growth with 15+ years of experience under Guru Ji G.D. Vashist." />
+  <style>
+    :root {
+      --bg: #1d0b0b;
+      --bg-2: #2a1212;
+      --panel: rgba(255, 255, 255, 0.06);
+      --panel-strong: #331b1b;
+      --card: #261515;
+      --card-alt: #341d1d;
+      --gold: #ffcb5a;
+      --gold-strong: #ff9f1c;
+      --purple: #ff5c5c;
+      --purple-soft: #ffc4c4;
+      --text: #fff4ee;
+      --muted: #f3d2c6;
+      --border: rgba(255, 203, 90, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 92, 92, 0.28), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(255, 203, 90, 0.12), transparent 30%),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      perspective: 1400px;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(18px);
+      z-index: 0;
+      opacity: 0.7;
+    }
+
+    body::before {
+      width: 480px;
+      height: 480px;
+      top: -100px;
+      right: -60px;
+      background: radial-gradient(circle, rgba(255, 203, 90, 0.38), rgba(255, 92, 92, 0.16), transparent 68%);
+      transform: rotateX(65deg) rotateY(18deg);
+    }
+
+    body::after {
+      width: 360px;
+      height: 360px;
+      left: -80px;
+      bottom: 60px;
+      background: radial-gradient(circle, rgba(255, 92, 92, 0.28), rgba(32, 19, 19, 0.08), transparent 68%);
+      transform: rotateX(55deg) rotateY(-25deg);
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: rgba(18, 11, 29, 0.8);
+      backdrop-filter: blur(12px);
+      color: #ffffff;
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: block;
+      line-height: 0;
+    }
+
+    .logo img {
+      display: block;
+      width: 150px;
+      height: 100px;
+      object-fit: contain;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--muted);
+      transition: 0.25s ease;
+    }
+
+    nav a:hover {
+      color: var(--gold);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(17, 10, 24, 0.82), rgba(45, 24, 63, 0.75)),
+        url("https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;
+      color: #fff;
+      text-align: center;
+      padding: 90px 20px 70px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      top: -120px;
+      right: 8%;
+      background: radial-gradient(circle, rgba(255, 203, 90, 0.32), rgba(255, 92, 92, 0.12), transparent 68%);
+      filter: blur(10px);
+      z-index: 0;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border: 1px solid rgba(246, 199, 106, 0.5);
+      border-radius: 50%;
+      left: 10%;
+      bottom: -60px;
+      box-shadow: 0 0 30px rgba(246, 199, 106, 0.2);
+      z-index: 0;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 1;
+      transform-style: preserve-3d;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 203, 90, 0.18);
+      border: 1px solid rgba(255, 203, 90, 0.38);
+      color: #ffe9b0;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 4.5vw, 3.5rem);
+      margin-bottom: 14px;
+      line-height: 1.1;
+      text-shadow: 0 6px 28px rgba(0, 0, 0, 0.28);
+    }
+
+    .hero p {
+      max-width: 850px;
+      margin: 0 auto 24px;
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--gold), #ff9f1c);
+      color: #2b140d;
+      padding: 14px 24px;
+      border-radius: 999px;
+      font-weight: 800;
+      transition: 0.3s ease;
+      box-shadow: 0 14px 28px rgba(255, 159, 28, 0.26);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 28px rgba(246, 199, 106, 0.34);
+      background: linear-gradient(135deg, #ffd98e, #ff8d3a);
+    }
+
+    .secondary-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #fff;
+      padding: 14px 24px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      max-width: 900px;
+      margin: 36px auto 0;
+      transform: translateZ(30px);
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(10px);
+      opacity: 0.8;
+      transform-style: preserve-3d;
+    }
+
+    .orb-1 {
+      width: 150px;
+      height: 150px;
+      top: 12%;
+      left: 8%;
+      background: radial-gradient(circle, rgba(246, 199, 106, 0.42), rgba(246, 199, 106, 0.08), transparent 70%);
+      box-shadow: 0 0 40px rgba(246, 199, 106, 0.18);
+    }
+
+    .orb-2 {
+      width: 200px;
+      height: 200px;
+      right: 10%;
+      bottom: 16%;
+      background: radial-gradient(circle, rgba(255, 92, 92, 0.46), rgba(255, 92, 92, 0.10), transparent 70%);
+      box-shadow: 0 0 50px rgba(255, 92, 92, 0.26);
+    }
+
+    .stat-card {
+      background: rgba(17, 10, 24, 0.42);
+      border: 1px solid rgba(246, 199, 106, 0.18);
+      border-radius: 16px;
+      padding: 18px 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    section {
+      padding: 60px 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+      pointer-events: none;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 30px;
+      color: #5b2c83;
+    }
+
+    .profile-card {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 30px;
+      background: linear-gradient(145deg, rgba(31, 22, 43, 0.95), rgba(18, 12, 27, 0.92));
+      border: 1px solid rgba(246, 199, 106, 0.18);
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: 0 22px 44px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      align-items: center;
+      transform: perspective(1200px) rotateX(1deg) rotateY(-1deg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-card::before,
+    .category-card::before,
+    .card::before,
+    .booking-box::before,
+    .about-box::before,
+    .credentials::before {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 30%, transparent 70%, rgba(246, 199, 106, 0.04));
+      pointer-events: none;
+    }
+
+    .profile-photo-box {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border: 2px solid rgba(255, 203, 90, 0.55);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(246, 199, 106, 0.18), rgba(141, 92, 195, 0.14));
+      overflow: hidden;
+      box-shadow: inset 0 0 30px rgba(255, 203, 90, 0.18), 0 16px 28px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-photo-box video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .profile-content h2 {
+      font-size: 30px;
+      color: #f8e6b1;
+      margin-bottom: 8px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(246, 199, 106, 0.14);
+      color: #ffde9a;
+      border: 1px solid rgba(246, 199, 106, 0.3);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .highlight {
+      color: #ffcf79;
+      font-weight: 700;
+    }
+
+    .info-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .info-item {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 203, 90, 0.14);
+      padding: 14px;
+      border-radius: 12px;
+      color: var(--muted);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .expertise-grid,
+    .services-grid,
+    .testimonial-grid,
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .card,
+    .category-card {
+      background: linear-gradient(180deg, rgba(32, 23, 43, 0.96), rgba(18, 12, 26, 0.98));
+      padding: 22px;
+      border-radius: 20px;
+      box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(246, 199, 106, 0.12);
+      border-top: 4px solid var(--gold);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      transform: perspective(1200px) rotateX(1deg);
+    }
+
+    .card:hover,
+    .category-card:hover {
+      transform: perspective(1200px) translateY(-6px) rotateX(0deg);
+      box-shadow: 0 22px 34px rgba(0, 0, 0, 0.26), 0 0 18px rgba(246, 199, 106, 0.08);
+      border-color: rgba(246, 199, 106, 0.28);
+    }
+
+    .category-card {
+      text-align: center;
+      border-top-color: var(--purple);
+      min-height: 220px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .category-card-link {
+      display: block;
+      color: inherit;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .category-card-link:hover {
+      transform: translateY(-5px);
+    }
+
+    .category-icon {
+      font-size: 34px;
+      margin-bottom: 12px;
+    }
+
+    .category-card h3 {
+      color: #f9d98d;
+      margin-bottom: 10px;
+    }
+
+    .card h3 {
+      color: #f8d989;
+      margin-bottom: 10px;
+    }
+
+    .card p,
+    .card li {
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .card ul {
+      padding-left: 18px;
+      margin-top: 10px;
+    }
+
+    .about-box {
+      background: linear-gradient(180deg, rgba(29, 22, 38, 0.96), rgba(19, 13, 28, 0.98));
+      border: 1px solid rgba(246, 199, 106, 0.14);
+      padding: 28px;
+      border-radius: 20px;
+      box-shadow: 0 16px 28px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      transform: perspective(1200px) rotateX(1deg);
+    }
+
+    .credentials {
+      background: linear-gradient(135deg, rgba(255, 203, 90, 0.14), rgba(255, 92, 92, 0.12));
+      border: 1px solid rgba(255, 203, 90, 0.28);
+      padding: 28px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: inset 0 0 30px rgba(255, 203, 90, 0.06), 0 18px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .credentials h3 {
+      color: #f8d785;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .services-grid .card {
+      text-align: center;
+    }
+
+    .price {
+      font-size: 30px;
+      font-weight: 700;
+      color: #b9770e;
+      margin: 12px 0;
+    }
+
+    .service-btn {
+      margin-top: 16px;
+      background: linear-gradient(135deg, var(--purple), #ff7a59);
+      color: #fff;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: 0.25s ease;
+    }
+
+    .service-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 24px rgba(255, 92, 92, 0.24);
+    }
+
+    .booking-box {
+      max-width: 760px;
+      margin: 0 auto;
+      background: linear-gradient(180deg, rgba(29, 22, 38, 0.96), rgba(18, 12, 26, 0.98));
+      border: 1px solid rgba(246, 199, 106, 0.18);
+      padding: 30px;
+      border-radius: 22px;
+      box-shadow: 0 20px 36px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      transform: perspective(1200px) rotateX(1deg);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
+      display: block;
+      color: #f8d785;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 15px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #fff;
+      box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    select option {
+      background: #261515;
+      color: #fff4ee;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .advance-box {
+      background: linear-gradient(180deg, rgba(255, 203, 90, 0.09), rgba(255, 92, 92, 0.06));
+      border: 1px solid rgba(255, 203, 90, 0.2);
+      padding: 16px;
+      border-radius: 12px;
+      margin: 18px 0;
+      color: #f9ebc7;
+      box-shadow: inset 0 0 20px rgba(246, 199, 106, 0.04);
+    }
+
+    .testimonials .card {
+      border-top-color: var(--purple);
+    }
+
+    footer {
+      background: linear-gradient(135deg, rgba(18, 11, 29, 0.96), rgba(28, 19, 38, 0.98));
+      color: #ffffff;
+      padding: 26px 0;
+      text-align: center;
+      margin-top: 20px;
+      border-top: 1px solid rgba(246, 199, 106, 0.12);
+    }
+
+    .small {
+      font-size: 14px;
+      opacity: 0.92;
+    }
+
+    @media (max-width: 992px) {
+
+      .expertise-grid,
+      .services-grid,
+      .testimonial-grid,
+      .category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .profile-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 30px;
+      }
+
+      .form-grid,
+      .expertise-grid,
+      .services-grid,
+      .testimonial-grid,
+      .category-grid,
+      .info-list {
+        grid-template-columns: 1fr;
+      }
+
+      nav ul {
+        gap: 10px;
+      }
+
+      nav a.nav-auth-link {
+        min-height: 34px;
+        padding: 5px 11px;
+      }
+
+      .footer-inner {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .logo {
+        width: 125px;
+      }
+
+      .logo img {
+        width: 125px;
+        height: 84px;
+      }
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 5, 5, 0.78);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(160deg, var(--panel-strong), var(--card));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .modal-box h3 {
+      color: var(--gold);
+      font-size: 22px;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    .modal-summary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .modal-summary div {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 14px;
+      color: var(--muted);
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+    }
+
+    .modal-summary div:last-child {
+      border-bottom: none;
+    }
+
+    .modal-summary span:last-child {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .modal-amount {
+      text-align: center;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--gold-strong);
+      margin: 10px 0 20px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal-actions .btn,
+    .modal-actions .btn-outline {
+      flex: 1;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .credit-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold), var(--gold-strong));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #1d0b0b;
+    }
+
+    .txn-id {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .auth-tabs button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .auth-tabs button.active {
+      background: linear-gradient(135deg, var(--gold), var(--gold-strong));
+      color: #1d0b0b;
+    }
+
+    .auth-field {
+      margin-bottom: 14px;
+    }
+
+    .auth-error {
+      color: #ff8a8a;
+      font-size: 13px;
+      margin-bottom: 12px;
+      display: none;
+    }
+
+    .history-list {
+      max-height: 320px;
+      overflow-y: auto;
+      margin-bottom: 16px;
+    }
+
+    .history-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+    }
+
+    .history-item .amount {
+      color: var(--gold-strong);
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .history-empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 20px 0;
+    }
+
+    .nav-user {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    nav a.nav-auth-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding: 7px 15px;
+      border: 1px solid rgba(255, 203, 90, 0.55);
+      border-radius: 999px;
+      color: var(--gold);
+      font-weight: 700;
+      white-space: nowrap;
+      transition: 0.2s ease;
+    }
+
+    nav a.nav-auth-link:hover {
+      color: #2b140d;
+      background: var(--gold);
+    }
+
+    nav a.nav-signup-link {
+      color: #2b140d;
+      background: linear-gradient(135deg, var(--gold), var(--gold-strong));
+      border-color: transparent;
+    }
+
+    nav a.nav-signup-link:hover {
+      color: #2b140d;
+      background: linear-gradient(135deg, #ffd98e, #ff8d3a);
+    }
+
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      padding: 34px 0 24px;
+      background: rgba(12, 7, 12, 0.72);
+      border-top: 1px solid rgba(255, 203, 90, 0.2);
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-copy strong {
+      display: block;
+      color: var(--gold);
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .social-links {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .social-link {
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 203, 90, 0.35);
+      border-radius: 50%;
+      color: var(--gold);
+      background: rgba(255, 255, 255, 0.05);
+      transition: 0.2s ease;
+    }
+
+    .social-link:hover {
+      transform: translateY(-2px);
+      color: #2b140d;
+      background: var(--gold);
+    }
+
+    .social-link svg {
+      width: 21px;
+      height: 21px;
+      fill: currentColor;
+    }
+
+    .social-link-disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    .social-link-disabled:hover {
+      transform: none;
+      color: var(--gold);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .auth-password-hint {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container nav">
+      <a class="logo" href="#home" aria-label="Talk2Jyotisha home">
+        <img src="talk2jyotisha-logo.svg" alt="Talk2Jyotisha" />
+      </a>
+      <nav>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#profile">Profile</a></li>
+          <li><a href="#expertise">Expertise</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#booking">Book Appointment</a></li>
+          <li><a href="#contact">Contact</a></li>
+          <li><a href="#" class="nav-auth-link" id="navAccountLink" onclick="event.preventDefault(); openAccountModal()">Login</a></li>
+          <li><a href="#" class="nav-auth-link nav-signup-link" id="navSignupLink" onclick="event.preventDefault(); switchAuthTab('signup'); openModal('accountModal')">Sign Up</a></li>
+          <li><a href="birth-details.html">My Dashboard</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" id="home">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="container">
+      <div class="hero-badge">Guidance • Remedies • Harmony</div>
+      <h1>Traditional Jyotish Guidance for Peace, Progress and Positive Direction</h1>
+      <p>
+        Pandit Vashist Jyotish provides personalized guidance through
+        <span class="highlight">Janam Kundli analysis</span>, traditional remedies,
+        and spiritual consultation for life's important decisions.
+      </p>
+      <div class="hero-actions">
+        <a href="#booking" class="btn">Book Your Appointment</a>
+        <a href="#categories" class="secondary-btn">Explore Remedies</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-value">15+</div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">5000+</div>
+          <div class="stat-label">Consultations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">Traditional Guidance</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="profile">
+    <div class="container">
+      <h2 class="section-title">Astrologer Profile</h2>
+      <div class="profile-card">
+        <div class="profile-photo-box">
+          <video controls preload="metadata" aria-label="Talk2Jyotisha astrologer introduction video">
+            <source src="astro.mp4" type="video/mp4" />
+            Your browser does not support the video element.
+          </video>
+        </div>
+        <div class="profile-content">
+          <h2>Pandit Vashist Jyotish</h2>
+          <div class="badge">15+ Years of Experience</div>
+          <p>
+            Welcome to <strong>Talk2Jyotisha.com</strong>, a platform for traditional
+            Hindu astrology and spiritual guidance. Receive thoughtful, personalized
+            consultation based on horoscope analysis, Vedic principles, and practical
+            remedies for everyday concerns.
+          </p>
+          <p style="margin-top: 12px;">
+            Our guidance covers Janam Kundli, Kundli Milan, career, marriage,
+            finance, family life, Vastu, and traditional dosha remedies. Every
+            consultation is respectful, focused, and easy to understand.
+          </p>
+
+          <div class="info-list">
+            <div class="info-item"><strong>Languages:</strong> Hindi and English</div>
+            <div class="info-item"><strong>Special Focus:</strong> Vedic Jyotish and Remedies</div>
+            <div class="info-item"><strong>Consultation Mode:</strong> Online and In-Person Guidance</div>
+            <div class="info-item"><strong>Booking Type:</strong> Advance Payment Required</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="container">
+      <h2 class="section-title">About</h2>
+      <div class="about-box">
+        <p>
+          Pandit Vashist Jyotish is dedicated to traditional Hindu pooja, path,
+          religious rituals, astrology, and spiritual services performed with
+          devotion, proper विधि-विधान, and respect for Sanatan traditions.
+        </p>
+        <br />
+        <p>
+          From Shadi Vivah Sanskar, Janam Kundli preparation, and Kundli Milan to
+          Griha Pravesh, Havan, Satyanarayan Katha, Mundan Sanskar, Naamkaran, Ganesh
+          Puja, and Navgraha Puja, we provide personalized assistance for important
+          life events and spiritual concerns.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="expertise">
+    <div class="container">
+      <h2 class="section-title">Our Specialized Jyotish Services</h2>
+      <div class="expertise-grid">
+        <div class="card">
+          <h3>Janam Kundli Analysis</h3>
+          <p>Detailed horoscope analysis for career, marriage, education, finance, family life, and major opportunities.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Kundli Milan and Marriage</h3>
+          <p>Guidance for compatibility, marriage delays, Manglik Dosh, relationship concerns, and family harmony.</p>
+        </div>
+        <div class="card">
+          <h3>Dosha Nivaran Puja</h3>
+          <p>Traditional guidance for Pitra Dosh, Kaal Sarp Dosh, Manglik Dosh, Navgraha Puja, Havan, and remedies.</p>
+        </div>
+        <div class="card">
+          <h3>Vastu Shastra</h3>
+          <p>Home, office, shop, layout, direction, entrance, and property guidance based on traditional Vastu
+            principles.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="credentials">
+        <h3>Spiritual Lineage and Experience</h3>
+        <p>
+          Traditional Jyotish, pooja, path, and spiritual guidance for peace,
+          prosperity, harmony, and positive direction.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="categories">
+    <div class="container">
+      <h2 class="section-title">Our Product Categories</h2>
+      <div class="category-grid">
+        <a class="category-card-link" href="rashi-yantra.html">
+          <div class="category-card">
+            <div class="category-icon">🪐</div>
+            <h3>Rashi Yantra</h3>
+            <p>Personalized yantras aligned with your birth sign for balance, protection, and positive energy.</p>
+          </div>
+        </a>
+        <a class="category-card-link" href="exclusive-yantra.html">
+          <div class="category-card">
+            <div class="category-icon">✨</div>
+            <h3>Exclusive Yantra</h3>
+            <p>Premium, rare yantras for deeper spiritual focus, success, and custom spiritual intentions.</p>
+          </div>
+        </a>
+        <a class="category-card-link" href="standard-gemstone.html">
+          <div class="category-card">
+            <div class="category-icon">💎</div>
+            <h3>Standard Gemstone</h3>
+            <p>Authentic gemstones selected for everyday guidance, strength, and auspicious planetary support.</p>
+          </div>
+        </a>
+        <a class="category-card-link" href="premium-gemstone.html">
+          <div class="category-card">
+            <div class="category-icon">🏆</div>
+            <h3>Premium Gemstone</h3>
+            <p>High-quality, carefully chosen gemstones for serious spiritual and astrological remedies.</p>
+          </div>
+        </a>
+        <a class="category-card-link" href="astro-essentials.html">
+          <div class="category-card">
+            <div class="category-icon">🕉️</div>
+            <h3>Astro Essentials</h3>
+            <p>Complete spiritual items curated to support remedies, rituals, and daily astrological harmony.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="services">
+    <div class="container">
+      <h2 class="section-title">Book a Jyotish Consultation</h2>
+      <div class="services-grid">
+        <div class="card">
+          <h3>30-Minute Consultation</h3>
+          <div class="price">$51 USD</div>
+          <p>Focused guidance for one main concern, including career, marriage, finance, or family matters.</p>
+          <button class="service-btn" onclick="scrollToBooking('30-Minute Consultation')">Book Now</button>
+        </div>
+        <div class="card">
+          <h3>1-Hour Consultation</h3>
+          <div class="price">$101 USD</div>
+          <p>Detailed horoscope-based guidance across important areas of life.</p>
+          <button class="service-btn" onclick="scrollToBooking('1-Hour Consultation')">Book Now</button>
+        </div>
+        <div class="card">
+          <h3>15-Minute Consultation</h3>
+          <div class="price">$21 USD</div>
+          <p>Quick, focused online guidance for one important question or immediate direction.</p>
+          <button class="service-btn" onclick="scrollToBooking('15-Minute Consultation')">Book Now</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="booking">
+    <div class="container">
+      <h2 class="section-title">Book Appointment</h2>
+      <div class="booking-box">
+        <form id="bookingForm">
+          <div class="form-grid">
+            <div>
+              <label for="name">Full Name</label>
+              <input type="text" id="name" placeholder="Enter your full name" required />
+            </div>
+            <div>
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" placeholder="Enter your phone number" required />
+            </div>
+            <div>
+              <label for="email">Email Address</label>
+              <input type="email" id="email" placeholder="Enter your email" required />
+            </div>
+            <div>
+              <label for="language">Preferred Language</label>
+              <select id="language" required>
+                <option value="">Select language</option>
+                <option>Hindi</option>
+                <option>English</option>
+              </select>
+            </div>
+            <div>
+              <label for="service">Consultation Type</label>
+              <select id="service" required>
+                <option value="">Select service</option>
+                <option>30-Minute Consultation</option>
+                <option>1-Hour Consultation</option>
+                <option>Pay-As-You-Go Consultation</option>
+              </select>
+            </div>
+            <div>
+              <label for="date">Preferred Date</label>
+              <input type="date" id="date" required />
+            </div>
+            <div>
+              <label for="time">Preferred Time</label>
+              <input type="time" id="time" required />
+            </div>
+            <div>
+              <label for="advance">Advance Payment</label>
+              <select id="advance" required>
+                <option value="">Select advance amount</option>
+                <option>₹300</option>
+                <option>₹500</option>
+                <option>₹700</option>
+              </select>
+            </div>
+            <div class="full">
+              <label for="message">Your Question / Concern</label>
+              <textarea id="message" placeholder="Write your concern here"></textarea>
+            </div>
+          </div>
+
+          <div class="advance-box">
+            <strong>Advance Booking Policy:</strong> An advance payment is required
+            to confirm the appointment slot. Your slot will be reserved only after
+            payment confirmation.
+          </div>
+
+          <button type="submit" class="btn">Pay Advance and Book Slot</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <div class="modal-overlay" id="accountModal">
+    <div class="modal-box">
+      <h3>Account Login</h3>
+      <div class="auth-tabs">
+        <button type="button" id="loginTabBtn" class="active" onclick="switchAuthTab('login')">Login</button>
+        <button type="button" id="signupTabBtn" onclick="switchAuthTab('signup')">Sign Up</button>
+      </div>
+      <div class="auth-error" id="authError"></div>
+      <form id="authForm" method="post" action="/api/login">
+        <div class="auth-field full" id="signupNameField" style="display:none;">
+          <label for="authName">Full Name</label>
+          <input type="text" id="authName" placeholder="Enter your full name" autocomplete="name" maxlength="120" />
+        </div>
+        <div class="auth-field">
+          <label for="authEmail">Email Address</label>
+          <input type="email" id="authEmail" placeholder="Enter your email" autocomplete="email" maxlength="254" required />
+        </div>
+        <div class="auth-field">
+          <label for="authPassword">Password</label>
+          <input type="password" id="authPassword" placeholder="Enter your password" autocomplete="current-password" minlength="12" maxlength="128" required />
+          <p class="auth-password-hint">Use at least 12 characters when creating an account.</p>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-outline" onclick="closeModal('accountModal')">Cancel</button>
+          <button type="submit" class="btn" id="authSubmitBtn">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-box">
+      <h3>My Bookings &amp; Receipts</h3>
+      <div class="history-list" id="historyList"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal('historyModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="paymentModal">
+    <div class="modal-box">
+      <h3>Confirm Advance Payment</h3>
+      <div class="modal-summary" id="paymentSummary"></div>
+      <div class="modal-amount" id="paymentAmount"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-outline" onclick="closeModal('paymentModal')">Cancel</button>
+        <button type="button" class="btn" onclick="processPayment()">Pay Now</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="creditModal">
+    <div class="modal-box">
+      <div class="credit-icon">✓</div>
+      <h3>Payment Successful</h3>
+      <div class="txn-id" id="txnId"></div>
+      <div class="modal-summary" id="creditSummary"></div>
+      <div class="modal-amount" id="creditAmount"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="closeModal('creditModal')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <section class="testimonials">
+    <div class="container">
+      <h2 class="section-title">Client Feedback</h2>
+      <div class="testimonial-grid">
+        <div class="card">
+          <h3>Career Guidance</h3>
+          <p>"The consultation gave me confidence and better clarity regarding my job decisions."</p>
+        </div>
+        <div class="card">
+          <h3>Marriage Advice</h3>
+          <p>"The guidance was simple, respectful, and very helpful for my family concerns."</p>
+        </div>
+        <div class="card">
+          <h3>Health Support</h3>
+          <p>"I appreciated the calm explanation and practical remedies suggested during the session."</p>
+        </div>
+        <div class="card">
+          <h3>Business Consultation</h3>
+          <p>"Very insightful session for business timing and partnership-related questions."</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer id="contact" class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-copy">
+        <strong>Talk2Jyotisha</strong>
+        <span>Traditional Jyotish guidance for peace, progress and positive direction.</span>
+      </div>
+      <div class="social-links" aria-label="Social media links">
+        <a class="social-link" href="https://www.instagram.com/talk2jyotisha/" target="_blank" rel="noopener noreferrer" aria-label="Visit Talk2Jyotisha on Instagram" title="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9a5.5 5.5 0 0 1-5.5 5.5h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9a3.5 3.5 0 0 0 3.5-3.5v-9A3.5 3.5 0 0 0 16.5 4h-9ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm5.25-3.25a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Z"/></svg>
+        </a>
+        <span class="social-link social-link-disabled" aria-label="Facebook link will be added soon" title="Facebook link will be added soon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8.2h2.8l.42-3.2H13.5V8.56c0-.93.26-1.57 1.61-1.57h1.72V4.13A23 23 0 0 0 14.32 4c-2.5 0-4.22 1.53-4.22 4.34v2.26H7.27v3.2h2.83V22h3.4Z"/></svg>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function scrollToBooking(serviceName) {
+      const serviceSelect = document.getElementById("service");
+      serviceSelect.value = serviceName;
+      document.getElementById("booking").scrollIntoView({ behavior: "smooth" });
+    }
+
+    const BOOKINGS_KEY = "t2j_bookings";
+
+    let pendingBooking = null;
+    let authMode = "login";
+
+    function getBookings() {
+      return JSON.parse(localStorage.getItem(BOOKINGS_KEY) || "[]");
+    }
+
+    function openAccountModal() {
+      switchAuthTab("login");
+      openModal("accountModal");
+    }
+
+    function switchAuthTab(mode) {
+      authMode = mode;
+      document.getElementById("loginTabBtn").classList.toggle("active", mode === "login");
+      document.getElementById("signupTabBtn").classList.toggle("active", mode === "signup");
+      document.getElementById("signupNameField").style.display = mode === "signup" ? "block" : "none";
+      document.getElementById("authSubmitBtn").textContent = mode === "signup" ? "Sign Up" : "Login";
+      document.getElementById("authError").style.display = "none";
+      document.getElementById("authForm").reset();
+    }
+
+    function openHistoryModal() {
+      const listEl = document.getElementById("historyList");
+      const email = getSession();
+
+      if (!email) {
+        listEl.innerHTML = '<div class="history-empty">Please login to view your bookings.</div>';
+        openModal("historyModal");
+        return;
+      }
+
+      const bookings = getBookings().filter((b) => b.email === email).reverse();
+
+      if (bookings.length === 0) {
+        listEl.innerHTML = '<div class="history-empty">No bookings yet.</div>';
+      } else {
+        listEl.innerHTML = bookings
+          .map(
+            (b) =>
+              "<div class=\"history-item\">" +
+              "<div><strong>" + b.service + "</strong></div>" +
+              "<div>" + b.date + " at " + b.time + "</div>" +
+              "<div>Txn: " + b.txnId + "</div>" +
+              "<div class=\"amount\">" + b.advance + "</div>" +
+              "</div>"
+          )
+          .join("");
+      }
+
+      openModal("historyModal");
+    }
+
+    document.getElementById("bookingForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const service = document.getElementById("service").value;
+      const date = document.getElementById("date").value;
+      const time = document.getElementById("time").value;
+      const advance = document.getElementById("advance").value;
+
+      if (!name || !phone || !service || !date || !time || !advance) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      pendingBooking = { name, phone, service, date, time, advance };
+
+      if (!getSession()) {
+        openAccountModal();
+        return;
+      }
+
+      showPaymentModal();
+    });
+
+    function showPaymentModal() {
+      const { name, service, date, time, advance } = pendingBooking;
+
+      document.getElementById("paymentSummary").innerHTML =
+        "<div><span>Name</span><span>" + name + "</span></div>" +
+        "<div><span>Service</span><span>" + service + "</span></div>" +
+        "<div><span>Date</span><span>" + date + "</span></div>" +
+        "<div><span>Time</span><span>" + time + "</span></div>";
+      document.getElementById("paymentAmount").textContent = advance;
+
+      openModal("paymentModal");
+    }
+
+    function processPayment() {
+      if (!pendingBooking) return;
+
+      const txnId = "TXN" + Date.now();
+      const paidOn = new Date().toLocaleString();
+      const email = getSession();
+
+      document.getElementById("txnId").textContent = "Transaction ID: " + txnId;
+      document.getElementById("creditSummary").innerHTML =
+        "<div><span>Name</span><span>" + pendingBooking.name + "</span></div>" +
+        "<div><span>Service</span><span>" + pendingBooking.service + "</span></div>" +
+        "<div><span>Date</span><span>" + pendingBooking.date + "</span></div>" +
+        "<div><span>Time</span><span>" + pendingBooking.time + "</span></div>" +
+        "<div><span>Paid On</span><span>" + paidOn + "</span></div>";
+      document.getElementById("creditAmount").textContent = "Amount Paid: " + pendingBooking.advance;
+
+      const bookings = getBookings();
+      bookings.push({ email, ...pendingBooking, txnId, paidOn });
+      localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
+
+      closeModal("paymentModal");
+      openModal("creditModal");
+
+      document.getElementById("bookingForm").reset();
+      pendingBooking = null;
+    }
+
+    function openModal(id) {
+      document.getElementById(id).classList.add("active");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove("active");
+    }
+
+  </script>
+  <script src="site-auth.js" defer></script>
+</body>
+
+</html>

@@ -1,0 +1,3 @@
+.t2j-private/
+__pycache__/
+.pytest_cache/

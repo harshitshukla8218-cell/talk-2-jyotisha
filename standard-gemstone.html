@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Standard Gemstone | Talk2Jyotisha</title>
+    <style>
+        :root {
+            --bg: #1d0b0b;
+            --bg-2: #2a1212;
+            --card: #261515;
+            --gold: #ffcb5a;
+            --gold-soft: #ffd98d;
+            --purple: #ff5c5c;
+            --text: #fff4ee;
+            --muted: #f3d2c6;
+            --border: rgba(255, 203, 90, 0.18);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(255, 92, 92, 0.22), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(255, 203, 90, 0.14), transparent 30%),
+                linear-gradient(135deg, var(--bg), var(--bg-2));
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            perspective: 1400px;
+            position: relative;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(20px);
+            z-index: 0;
+            opacity: 0.8;
+        }
+
+        body::before {
+            width: 380px;
+            height: 380px;
+            top: -50px;
+            right: -20px;
+            background: radial-gradient(circle, rgba(255, 203, 90, 0.3), rgba(255, 92, 92, 0.12), transparent 68%);
+            transform: rotateX(70deg) rotateY(18deg);
+        }
+
+        body::after {
+            width: 320px;
+            height: 320px;
+            left: -50px;
+            bottom: 80px;
+            background: radial-gradient(circle, rgba(255, 92, 92, 0.26), rgba(18, 11, 29, 0.08), transparent 68%);
+            transform: rotateX(60deg) rotateY(-25deg);
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: rgba(18, 11, 29, 0.9);
+            color: #fff;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: block;
+            line-height: 0;
+        }
+
+        .logo img {
+            display: block;
+            width: 150px;
+            height: 100px;
+            object-fit: contain;
+        }
+
+        .back-link {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .page-wrap {
+            padding: 60px 0;
+        }
+
+        .content-box {
+            background: linear-gradient(180deg, rgba(29, 23, 48, 0.98), rgba(17, 11, 25, 0.98));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+            padding: 30px;
+            transform: perspective(1200px) rotateX(1deg) rotateY(-1deg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-box::before {
+            content: "";
+            position: absolute;
+            inset: 12px;
+            border-radius: 18px;
+            border: 1px solid rgba(246, 199, 106, 0.12);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 35%, transparent 70%, rgba(255, 92, 92, 0.06));
+            pointer-events: none;
+        }
+
+        h1 {
+            color: var(--gold-soft);
+            margin-bottom: 16px;
+            font-size: 38px;
+        }
+
+        p {
+            margin-bottom: 14px;
+            font-size: 17px;
+            color: var(--muted);
+        }
+
+        strong {
+            color: #fff;
+        }
+
+        .placeholder {
+            background: linear-gradient(180deg, rgba(255, 203, 90, 0.09), rgba(255, 92, 92, 0.06));
+            border: 1px solid rgba(255, 203, 90, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 18px;
+            color: #f9ebc7;
+            font-weight: 600;
+            box-shadow: inset 0 0 20px rgba(246, 199, 106, 0.05);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .product-card {
+            background: linear-gradient(180deg, rgba(255, 203, 90, 0.09), rgba(255, 92, 92, 0.06));
+            border: 1px solid rgba(255, 203, 90, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .product-card h3 {
+            color: var(--gold-soft);
+            margin-bottom: 8px;
+            font-size: 19px;
+        }
+
+        .product-card p {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .product-card button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            color: #1d0b0b;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        @media (max-width: 800px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 5, 5, 0.78);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 440px;
+            background: linear-gradient(160deg, #331b1b, var(--card));
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+        }
+
+        .modal-box h3 {
+            color: var(--gold);
+            font-size: 22px;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .modal-summary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 18px;
+        }
+
+        .modal-summary div {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+            color: var(--muted);
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+        }
+
+        .modal-summary div:last-child {
+            border-bottom: none;
+        }
+
+        .modal-summary span:last-child {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .modal-amount {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--purple);
+            margin: 10px 0 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-actions .btn,
+        .modal-actions .btn-outline {
+            flex: 1;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 800;
+        }
+
+        .modal-actions .btn {
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            color: #1d0b0b;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .credit-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--gold), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: #1d0b0b;
+        }
+
+        .txn-id {
+            text-align: center;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .auth-tabs button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--muted);
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .auth-tabs button.active {
+            background: linear-gradient(135deg, var(--gold), var(--purple));
+            color: #1d0b0b;
+        }
+
+        .auth-field {
+            margin-bottom: 14px;
+        }
+
+        .auth-error {
+            color: #ff8a8a;
+            font-size: 13px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .modal-box label {
+            font-weight: 700;
+            font-size: 14px;
+            margin-bottom: 6px;
+            display: block;
+            color: #f8d785;
+        }
+
+        .modal-box input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+        }
+
+        .history-list {
+            max-height: 320px;
+            overflow-y: auto;
+            margin-bottom: 16px;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+        }
+
+        .history-item .amount {
+            color: var(--gold);
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .history-empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav">
+            <a class="logo" href="index.html" aria-label="Talk2Jyotisha home">
+                <img src="talk2jyotisha-logo.svg" alt="Talk2Jyotisha" />
+            </a>
+            <div class="nav-links">
+                <a class="back-link" href="index.html">← Back to Home</a>
+                <a href="javascript:void(0)" onclick="openHistoryModal()">My Orders</a>
+                <a href="birth-details.html">My Dashboard</a>
+                <a href="javascript:void(0)" id="navAccountLink" onclick="openAccountModal()">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="page-wrap">
+        <div class="container">
+            <div class="content-box">
+                <h1>Standard Gemstone</h1>
+                <p>This is the dedicated page for the <strong>Standard Gemstone</strong> category.</p>
+                <p>Add your gemstone collection, product cards, and details here.</p>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <h3>Yellow Sapphire (Pukhraj)</h3>
+                        <p>Natural yellow sapphire for wisdom, prosperity, and marriage harmony.</p>
+                        <div class="product-price">₹4999</div>
+                        <button onclick="buyProduct('Yellow Sapphire (Pukhraj)', 4999)">Buy Now</button>
+                    </div>
+                    <div class="product-card">
+                        <h3>Red Coral (Moonga)</h3>
+                        <p>Natural red coral to strengthen Mars energy and boost confidence.</p>
+                        <div class="product-price">₹3499</div>
+                        <button onclick="buyProduct('Red Coral (Moonga)', 3499)">Buy Now</button>
+                    </div>
+                    <div class="product-card">
+                        <h3>Pearl (Moti)</h3>
+                        <p>Natural pearl recommended for emotional balance and Moon-related remedies.</p>
+                        <div class="product-price">₹2999</div>
+                        <button onclick="buyProduct('Pearl (Moti)', 2999)">Buy Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="accountModal">
+        <div class="modal-box">
+            <h3>Account Login</h3>
+            <div class="auth-tabs">
+                <button type="button" id="loginTabBtn" class="active" onclick="switchAuthTab('login')">Login</button>
+                <button type="button" id="signupTabBtn" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+            <div class="auth-error" id="authError"></div>
+            <form id="authForm" method="post" action="/api/login">
+                <div class="auth-field" id="signupNameField" style="display:none;">
+                    <label for="authName">Full Name</label>
+                    <input type="text" id="authName" placeholder="Enter your full name" />
+                </div>
+                <div class="auth-field">
+                    <label for="authEmail">Email Address</label>
+                    <input type="email" id="authEmail" placeholder="Enter your email" autocomplete="email" maxlength="254" required />
+                </div>
+                <div class="auth-field">
+                    <label for="authPassword">Password</label>
+                    <input type="password" id="authPassword" placeholder="Enter your password" autocomplete="current-password" minlength="12" maxlength="128" required />
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-outline" onclick="closeModal('accountModal')">Cancel</button>
+                    <button type="submit" class="btn" id="authSubmitBtn">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-box">
+            <h3>My Orders &amp; Receipts</h3>
+            <div class="history-list" id="historyList"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal('historyModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal-box">
+            <h3 id="orderProductName">Product</h3>
+            <form id="orderForm">
+                <div class="auth-field">
+                    <label for="buyerName">Full Name</label>
+                    <input type="text" id="buyerName" placeholder="Enter your full name" required />
+                </div>
+                <div class="auth-field">
+                    <label for="buyerPhone">Phone Number</label>
+                    <input type="tel" id="buyerPhone" placeholder="Enter your phone number" required />
+                </div>
+                <div class="auth-field">
+                    <label for="buyerQty">Quantity</label>
+                    <input type="number" id="buyerQty" min="1" value="1" required />
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-outline" onclick="closeModal('orderModal')">Cancel</button>
+                    <button type="submit" class="btn">Continue to Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-box">
+            <h3>Confirm Payment</h3>
+            <div class="modal-summary" id="paymentSummary"></div>
+            <div class="modal-amount" id="paymentAmount"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-outline" onclick="closeModal('paymentModal')">Cancel</button>
+                <button type="button" class="btn" onclick="processPayment()">Pay Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="creditModal">
+        <div class="modal-box">
+            <div class="credit-icon">✓</div>
+            <h3>Payment Successful</h3>
+            <div class="txn-id" id="txnId"></div>
+            <div class="modal-summary" id="creditSummary"></div>
+            <div class="modal-amount" id="creditAmount"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn" onclick="closeModal('creditModal')">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BOOKINGS_KEY = "t2j_bookings";
+        let pendingOrder = null;
+        let authMode = "login";
+
+        function getBookings() { return JSON.parse(localStorage.getItem(BOOKINGS_KEY) || "[]"); }
+
+
+        function switchAuthTab(mode) {
+            authMode = mode;
+            document.getElementById("loginTabBtn").classList.toggle("active", mode === "login");
+            document.getElementById("signupTabBtn").classList.toggle("active", mode === "signup");
+            document.getElementById("signupNameField").style.display = mode === "signup" ? "block" : "none";
+            document.getElementById("authSubmitBtn").textContent = mode === "signup" ? "Sign Up" : "Login";
+            document.getElementById("authError").style.display = "none";
+            document.getElementById("authForm").reset();
+        }
+
+        function openHistoryModal() {
+            const listEl = document.getElementById("historyList");
+            const email = getSession();
+
+            if (!email) {
+                listEl.innerHTML = '<div class="history-empty">Please login to view your orders.</div>';
+                openModal("historyModal");
+                return;
+            }
+
+            const bookings = getBookings().filter((b) => b.email === email && b.product).reverse();
+
+            if (bookings.length === 0) {
+                listEl.innerHTML = '<div class="history-empty">No orders yet.</div>';
+            } else {
+                listEl.innerHTML = bookings
+                    .map(
+                        (b) =>
+                            "<div class=\"history-item\"><div><strong>" + b.product + "</strong></div>" +
+                            "<div>Qty: " + b.qty + "</div>" +
+                            "<div>Txn: " + b.txnId + "</div>" +
+                            "<div class=\"amount\">\u20b9" + b.amount + "</div></div>"
+                    )
+                    .join("");
+            }
+
+            openModal("historyModal");
+        }
+
+        function buyProduct(name, price) {
+            document.getElementById("orderProductName").textContent = name + " - \u20b9" + price;
+            document.getElementById("orderForm").dataset.product = name;
+            document.getElementById("orderForm").dataset.price = price;
+            openModal("orderModal");
+        }
+
+        document.getElementById("orderForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const name = document.getElementById("buyerName").value.trim();
+            const phone = document.getElementById("buyerPhone").value.trim();
+            const qty = parseInt(document.getElementById("buyerQty").value, 10) || 1;
+            const product = this.dataset.product;
+            const price = parseInt(this.dataset.price, 10);
+
+            if (!name || !phone) { alert("Please fill all required fields."); return; }
+
+            pendingOrder = { name, phone, product, qty, amount: price * qty };
+            closeModal("orderModal");
+
+            if (!getSession()) {
+                resumeAfterAuth = true;
+                openAccountModal();
+                return;
+            }
+            showPaymentModal();
+        });
+
+        function showPaymentModal() {
+            const { name, product, qty, amount } = pendingOrder;
+            document.getElementById("paymentSummary").innerHTML =
+                "<div><span>Name</span><span>" + name + "</span></div>" +
+                "<div><span>Product</span><span>" + product + "</span></div>" +
+                "<div><span>Quantity</span><span>" + qty + "</span></div>";
+            document.getElementById("paymentAmount").textContent = "\u20b9" + amount;
+            openModal("paymentModal");
+        }
+
+        function processPayment() {
+            if (!pendingOrder) return;
+
+            const txnId = "TXN" + Date.now();
+            const paidOn = new Date().toLocaleString();
+            const email = getSession();
+
+            document.getElementById("txnId").textContent = "Transaction ID: " + txnId;
+            document.getElementById("creditSummary").innerHTML =
+                "<div><span>Name</span><span>" + pendingOrder.name + "</span></div>" +
+                "<div><span>Product</span><span>" + pendingOrder.product + "</span></div>" +
+                "<div><span>Quantity</span><span>" + pendingOrder.qty + "</span></div>" +
+                "<div><span>Paid On</span><span>" + paidOn + "</span></div>";
+            document.getElementById("creditAmount").textContent = "Amount Paid: \u20b9" + pendingOrder.amount;
+
+            const bookings = getBookings();
+            bookings.push({ email, product: pendingOrder.product, qty: pendingOrder.qty, amount: pendingOrder.amount, txnId, paidOn });
+            localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
+
+            closeModal("paymentModal");
+            openModal("creditModal");
+            document.getElementById("orderForm").reset();
+            pendingOrder = null;
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add("active"); }
+        function closeModal(id) { document.getElementById(id).classList.remove("active"); }
+    </script>
+    <script src="site-auth.js" defer></script>
+</body>
+
+</html>

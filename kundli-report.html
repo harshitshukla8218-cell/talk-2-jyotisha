@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Request a detailed Kundli report and 15-minute astrology consultation from Talk2Jyotisha." />
+  <title>Detailed Kundli Report | Talk2Jyotisha</title>
+  <style>
+    :root {
+      --bg: #1d0b0b;
+      --bg-2: #2a1212;
+      --panel: #261515;
+      --gold: #ffcb5a;
+      --gold-strong: #ff9f1c;
+      --text: #fff4ee;
+      --muted: #f3d2c6;
+      --border: rgba(255, 203, 90, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(255, 92, 92, 0.22), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(255, 203, 90, 0.14), transparent 30%),
+        linear-gradient(135deg, var(--bg), var(--bg-2));
+      font: 16px/1.6 Arial, sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .container {
+      width: min(92%, 980px);
+      margin: 0 auto;
+    }
+
+    header {
+      background: rgba(18, 11, 29, 0.9);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .nav {
+      min-height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: block;
+      line-height: 0;
+    }
+
+    .logo img {
+      display: block;
+      width: 150px;
+      height: 100px;
+      object-fit: contain;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .nav-links a:hover {
+      color: var(--gold);
+    }
+
+    main {
+      padding: 48px 0 64px;
+    }
+
+    .report-card {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: clamp(24px, 5vw, 42px);
+      background: linear-gradient(180deg, rgba(51, 27, 27, 0.96), rgba(38, 21, 21, 0.98));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 6px 0 12px;
+      color: var(--gold);
+      font-size: clamp(28px, 5vw, 38px);
+      line-height: 1.2;
+    }
+
+    .muted,
+    .price-note,
+    .notice {
+      color: var(--muted);
+    }
+
+    .price-note {
+      margin-top: 16px;
+      padding: 14px;
+      background: rgba(18, 11, 29, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    .birth-summary {
+      margin: 22px 0;
+      padding: 16px;
+      background: rgba(18, 11, 29, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .birth-summary h2 {
+      margin-bottom: 8px;
+      color: var(--gold);
+      font-size: 18px;
+    }
+
+    .birth-summary p + p {
+      margin-top: 4px;
+    }
+
+    form {
+      margin-top: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 110px;
+      padding: 12px;
+      color: var(--text);
+      background: rgba(18, 11, 29, 0.74);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font: inherit;
+      resize: vertical;
+    }
+
+    textarea:focus,
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    button {
+      min-height: 48px;
+      margin-top: 16px;
+      padding: 11px 20px;
+      border: 0;
+      border-radius: 10px;
+      color: #1d0b0b;
+      background: linear-gradient(135deg, var(--gold), var(--gold-strong));
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    .notice {
+      margin-top: 16px;
+      font-size: 14px;
+    }
+
+    .status {
+      margin-top: 16px;
+      color: var(--gold);
+    }
+
+    .status.error {
+      color: #ff9a9a;
+    }
+
+    .status:empty {
+      display: none;
+    }
+
+    @media (max-width: 520px) {
+      .logo img {
+        width: 125px;
+        height: 84px;
+      }
+
+      .nav {
+        padding: 8px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container nav">
+      <a class="logo" href="index.html#home" aria-label="Talk2Jyotisha home">
+        <img src="talk2jyotisha-logo.svg" alt="Talk2Jyotisha" />
+      </a>
+      <nav class="nav-links">
+        <a href="birth-details.html">My Dashboard</a>
+        <a href="index.html">Home</a>
+        <a href="#" id="navAccountLink">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <section class="report-card" aria-labelledby="reportTitle">
+        <p class="eyebrow">Personalized astrology service</p>
+        <h1 id="reportTitle">Get Your Detailed Kundli Report</h1>
+        <p class="muted">Get a detailed birth-chart report along with a 15-minute astrology consultation.</p>
+        <p class="price-note">The existing website lists $21 for a standalone 15-minute consultation, but does not configure a price for the combined report and consultation. Please confirm the combined price before proceeding.</p>
+
+        <div id="birthSummary" class="birth-summary" hidden>
+          <h2>Birth details from your profile</h2>
+          <p id="birthDateSummary"></p>
+          <p id="birthTimeSummary"></p>
+          <p id="birthPlaceSummary"></p>
+        </div>
+
+        <p id="missingDetails" class="notice" hidden>
+          Add your birth details to your dashboard first. They will be used with this request, so you do not need to enter them again here.
+          <a href="birth-details.html">Add Birth Details</a>
+        </p>
+
+        <form id="requestForm">
+          <label for="requestMessage">Anything you would like the astrologer to know? <span class="muted">(optional)</span></label>
+          <textarea id="requestMessage" name="message" maxlength="1000" placeholder="Share a question or area of focus"></textarea>
+          <button type="submit" id="requestButton">Send Consultation Request</button>
+        </form>
+        <p class="notice">Submitting saves a pending request only. It does not confirm an appointment, payment, or completed report.</p>
+        <p id="requestStatus" class="status" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+  </main>
+
+  <script src="site-auth.js" defer></script>
+  <script>
+    const requestForm = document.getElementById("requestForm");
+    const requestButton = document.getElementById("requestButton");
+    const requestStatus = document.getElementById("requestStatus");
+    let hasBirthDetails = false;
+
+    function showRequestStatus(message, isError) {
+      requestStatus.textContent = message;
+      requestStatus.classList.toggle("error", isError);
+      requestStatus.setAttribute("role", isError ? "alert" : "status");
+    }
+
+    async function loadReportDetails() {
+      await window.authReady;
+      try {
+        const result = await window.apiRequest("/api/profile");
+        if (!result.details) {
+          document.getElementById("missingDetails").hidden = false;
+          requestForm.hidden = true;
+          return;
+        }
+        hasBirthDetails = true;
+        const details = result.details;
+        document.getElementById("birthDateSummary").textContent =
+          "Date: " + new Date(details.dateOfBirth + "T00:00:00").toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          });
+        document.getElementById("birthTimeSummary").textContent =
+          "Time: " + (details.birthTimeUnknown ? "Unknown" : details.timeOfBirth);
+        document.getElementById("birthPlaceSummary").textContent =
+          "Place: " + [details.placeOfBirth, details.region, details.country].filter(Boolean).join(", ");
+        document.getElementById("birthSummary").hidden = false;
+      } catch (error) {
+        showRequestStatus(error.message, true);
+      }
+    }
+
+    requestForm.addEventListener("submit", async function (event) {
+      event.preventDefault();
+      if (!hasBirthDetails) {
+        showRequestStatus("Please add your birth details before sending this request.", true);
+        return;
+      }
+      requestButton.disabled = true;
+      try {
+        const result = await window.apiRequest("/api/kundli-requests", {
+          method: "POST",
+          body: { message: document.getElementById("requestMessage").value.trim() }
+        });
+        showRequestStatus(result.message, false);
+        requestForm.reset();
+      } catch (error) {
+        showRequestStatus(error.message, true);
+      } finally {
+        requestButton.disabled = false;
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", loadReportDetails);
+  </script>
+</body>
+
+</html>
