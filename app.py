@@ -464,11 +464,19 @@ def _document_payload(row):
 
 def create_app(test_config=None):
     app = Flask(__name__, static_folder=None)
-    private_dir = PROJECT_ROOT / ".t2j-private"
+    default_private_dir = (
+        Path("/tmp") / "t2j-private"
+        if os.environ.get("VERCEL")
+        else PROJECT_ROOT / ".t2j-private"
+    )
+    private_dir = Path(os.environ.get("T2J_PRIVATE_DIR", default_private_dir))
     private_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     if os.name != "nt":
         os.chmod(private_dir, 0o700)
-    production = os.environ.get("T2J_ENV", "").lower() == "production"
+    production = (
+        os.environ.get("T2J_ENV", "").lower() == "production"
+        or os.environ.get("VERCEL_ENV", "").lower() == "production"
+    )
     secret_key = os.environ.get("T2J_SECRET_KEY")
     if production and not secret_key:
         raise RuntimeError("Set T2J_SECRET_KEY to a strong random value in production.")

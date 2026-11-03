@@ -33,6 +33,7 @@ AI interpretation is not configured, so the portal reports that interpretation i
 - Accounts and birth details are stored in SQLite on the server. Passwords are hashed; browser storage is not used for authentication.
 - Local development uses a generated signing key. For deployment, set `T2J_ENV=production`, set `T2J_SECRET_KEY` to a unique, randomly generated secret, and set `T2J_DATABASE` to a persistent database file. Production cookies require HTTPS.
 - Use a production WSGI server and HTTPS-enabled hosting. The built-in Flask development server is for local development only.
+- Vercel detects the Flask application from `index.py`. Set `T2J_SECRET_KEY` in the Vercel project environment variables before deploying to production. Vercel's `/tmp` storage is temporary and instance-local: SQLite accounts, sessions, and generated PDFs can disappear or be unavailable on another instance. Use a persistent database and file store before collecting real customer data; this Vercel configuration is suitable for a deployment preview, not production customer data.
 - Email verification, password recovery, email delivery, and payment processing are not configured. Existing browser-only accounts cannot be migrated safely; users must sign up again.
 
 ## Kundli report request
