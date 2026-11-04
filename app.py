@@ -184,6 +184,7 @@ def _initialize_database(app):
                 """
                 INSERT INTO wallet_accounts (user_id, balance_cents, updated_at)
                 SELECT id, 0, ? FROM users
+                WHERE TRUE
                 ON CONFLICT (user_id) DO NOTHING
                 """,
                 (datetime.now(timezone.utc).isoformat(),),

@@ -456,6 +456,15 @@ def test_postgres_sql_translation_preserves_ids_and_placeholders():
     assert "COLLATE NOCASE" not in schema
     assert query == "SELECT id FROM users WHERE email = %s "
     assert app_module._postgres_sql("BEGIN IMMEDIATE") == "BEGIN"
+    seed_query = app_module._postgres_sql(
+        """
+        INSERT INTO wallet_accounts (user_id, balance_cents, updated_at)
+        SELECT id, 0, ? FROM users
+        WHERE TRUE
+        ON CONFLICT (user_id) DO NOTHING
+        """
+    )
+    assert "FROM users\n        WHERE TRUE\n        ON CONFLICT" in seed_query
 
 
 def test_unknown_api_route_returns_json_instead_of_html(client):
