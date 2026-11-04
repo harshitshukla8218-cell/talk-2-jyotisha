@@ -280,7 +280,11 @@
           { method: "POST", body: body }
         );
         setAuthenticatedUser(result.user);
-        window.location.assign(safeRedirectTarget());
+        if (window.authNextPath || nextPath) {
+          window.location.assign(safeRedirectTarget());
+        } else if (typeof window.closeModal === "function") {
+          window.closeModal("accountModal");
+        }
       } catch (error) {
         showError(error.message);
         submitButton.disabled = false;
