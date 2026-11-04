@@ -385,6 +385,53 @@ def test_member_portal_apis_require_authentication(client):
         assert client.get(path).status_code == 401
 
 
+def test_vercel_auth_fails_clearly_without_persistent_database(client, app):
+    app.config["VERCEL_DEPLOYMENT"] = True
+    headers = {"X-CSRFToken": csrf(client)}
+
+    signup_response = client.post(
+        "/api/signup",
+        json={
+            "fullName": "Test Person",
+            "email": "test@example.com",
+            "password": "A-secure-test-password-123",
+        },
+        headers=headers,
+    )
+    login_response = client.post(
+        "/api/login",
+        json={"email": "test@example.com", "password": "A-secure-test-password-123"},
+        headers=headers,
+    )
+
+    assert signup_response.status_code == 503
+    assert login_response.status_code == 503
+    assert "DATABASE_URL" in signup_response.get_json()["error"]
+
+
+def test_postgres_sql_translation_preserves_ids_and_placeholders():
+    schema = app_module._postgres_sql(
+        """
+        CREATE TABLE users (
+            id INTEGER PRIMARY KEY,
+            email TEXT NOT NULL UNIQUE COLLATE NOCASE
+        );
+        CREATE TABLE birth_details (
+            user_id INTEGER PRIMARY KEY REFERENCES users(id)
+        );
+        """
+    )
+    query = app_module._postgres_sql(
+        "SELECT id FROM users WHERE email = ? COLLATE NOCASE"
+    )
+
+    assert "id BIGSERIAL PRIMARY KEY" in schema
+    assert "user_id BIGINT PRIMARY KEY REFERENCES users(id)" in schema
+    assert "COLLATE NOCASE" not in schema
+    assert query == "SELECT id FROM users WHERE email = %s "
+    assert app_module._postgres_sql("BEGIN IMMEDIATE") == "BEGIN"
+
+
 def test_unknown_api_route_returns_json_instead_of_html(client):
     response = client.get("/api/not-a-real-endpoint")
     assert response.status_code == 404

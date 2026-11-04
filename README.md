@@ -30,10 +30,10 @@ AI interpretation is not configured, so the portal reports that interpretation i
 
 ## Authentication and deployment
 
-- Accounts and birth details are stored in SQLite on the server. Passwords are hashed; browser storage is not used for authentication.
-- Local development uses a generated signing key. For deployment, set `T2J_ENV=production`, set `T2J_SECRET_KEY` to a unique, randomly generated secret, and set `T2J_DATABASE` to a persistent database file. Production cookies require HTTPS.
+- Accounts and birth details use SQLite locally and PostgreSQL when `DATABASE_URL` is configured. Passwords are hashed; browser storage is not used for authentication.
+- Local development uses a generated signing key. For deployment, set `T2J_ENV=production`, set `T2J_SECRET_KEY` to a unique, randomly generated secret, and set `DATABASE_URL` to a persistent PostgreSQL connection string. Production cookies require HTTPS.
 - Use a production WSGI server and HTTPS-enabled hosting. The built-in Flask development server is for local development only.
-- Vercel detects the Flask application from `index.py`. Set `T2J_SECRET_KEY` in the Vercel project environment variables before deploying to production. Vercel's `/tmp` storage is temporary and instance-local: SQLite accounts, sessions, and generated PDFs can disappear or be unavailable on another instance. Use a persistent database and file store before collecting real customer data; this Vercel configuration is suitable for a deployment preview, not production customer data.
+- Vercel detects the Flask application from `index.py`. Configure `T2J_SECRET_KEY` and `DATABASE_URL` in the Vercel project environment variables; use a managed PostgreSQL provider such as Supabase or Neon. Vercel's `/tmp` storage is temporary and instance-local, so SQLite and generated PDFs are not persistent there. PostgreSQL keeps accounts and profiles available across instances; generated PDFs still need a persistent object/file store. Existing SQLite accounts are not migrated automatically and must sign up again after PostgreSQL is configured.
 - Email verification, password recovery, email delivery, and payment processing are not configured. Existing browser-only accounts cannot be migrated safely; users must sign up again.
 
 ## Kundli report request

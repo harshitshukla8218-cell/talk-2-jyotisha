@@ -9,6 +9,7 @@ import uuid
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
+import psycopg
 from flask import (
     Flask,
     abort,
@@ -64,6 +65,67 @@ class User(UserMixin):
         self.full_name = full_name
 
 
+class _PostgresRow(dict):
+    def __init__(self, names, values):
+        super().__init__(zip(names, values))
+        self._values = values
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            return self._values[key]
+        return super().__getitem__(key)
+
+
+def _postgres_row_factory(cursor):
+    names = [column.name for column in cursor.description]
+    return lambda values: _PostgresRow(names, values)
+
+
+def _postgres_sql(query):
+    query = query.replace("BEGIN IMMEDIATE", "BEGIN")
+    query = query.replace("COLLATE NOCASE", "")
+    if query.lstrip().upper().startswith("CREATE TABLE"):
+        query = re.sub(
+            r"\bINTEGER PRIMARY KEY(?!\s+REFERENCES)",
+            "BIGSERIAL PRIMARY KEY",
+            query,
+            flags=re.IGNORECASE,
+        )
+        query = re.sub(
+            r"\bINTEGER(\s+PRIMARY KEY)?\s+REFERENCES\b",
+            lambda match: "BIGINT" + (match.group(1) or "") + " REFERENCES",
+            query,
+            flags=re.IGNORECASE,
+        )
+    return query.replace("?", "%s")
+
+
+class _PostgresConnection:
+    def __init__(self, connection):
+        self._connection = connection
+
+    @property
+    def in_transaction(self):
+        return self._connection.info.transaction_status != psycopg.pq.TransactionStatus.IDLE
+
+    def execute(self, query, parameters=()):
+        return self._connection.execute(_postgres_sql(query), parameters)
+
+    def executemany(self, query, parameters):
+        return self._connection.cursor().executemany(
+            _postgres_sql(query),
+            parameters,
+        )
+
+    def executescript(self, script):
+        for statement in script.split(";"):
+            if statement.strip():
+                self.execute(statement)
+
+    def close(self):
+        self._connection.close()
+
+
 def _development_secret(private_dir):
     private_dir.mkdir(parents=True, exist_ok=True)
     secret_path = private_dir / "secret.key"
@@ -79,22 +141,65 @@ def _development_secret(private_dir):
 
 def _database_connection():
     if "database" not in g:
-        g.database = sqlite3.connect(
-            current_app.config["DATABASE"],
-            timeout=10,
-            isolation_level=None,
-        )
-        g.database.row_factory = sqlite3.Row
-        g.database.execute("PRAGMA foreign_keys = ON")
-        g.database.execute("PRAGMA busy_timeout = 10000")
+        if current_app.config["DATABASE_URL"]:
+            g.database = _PostgresConnection(
+                psycopg.connect(
+                    current_app.config["DATABASE_URL"],
+                    autocommit=True,
+                    row_factory=_postgres_row_factory,
+                )
+            )
+        else:
+            g.database = sqlite3.connect(
+                current_app.config["DATABASE"],
+                timeout=10,
+                isolation_level=None,
+            )
+            g.database.row_factory = sqlite3.Row
+            g.database.execute("PRAGMA foreign_keys = ON")
+            g.database.execute("PRAGMA busy_timeout = 10000")
     return g.database
 
 
 def _initialize_database(app):
+    if app.config["DATABASE_URL"]:
+        connection = _PostgresConnection(
+            psycopg.connect(
+                app.config["DATABASE_URL"],
+                autocommit=True,
+                row_factory=_postgres_row_factory,
+            )
+        )
+        _initialize_database_schema(connection)
+        connection.execute(
+            """
+            INSERT INTO wallet_accounts (user_id, balance_cents, updated_at)
+            SELECT id, 0, ? FROM users
+            ON CONFLICT (user_id) DO NOTHING
+            """,
+            (datetime.now(timezone.utc).isoformat(),),
+        )
+        connection.close()
+        return
+
     database_path = Path(app.config["DATABASE"])
     database_path.parent.mkdir(parents=True, exist_ok=True)
     connection = sqlite3.connect(database_path)
     connection.execute("PRAGMA foreign_keys = ON")
+    _initialize_database_schema(connection)
+    connection.execute(
+        """
+        INSERT OR IGNORE INTO wallet_accounts (user_id, balance_cents, updated_at)
+        SELECT id, 0, ? FROM users
+        """,
+        (datetime.now(timezone.utc).isoformat(),),
+    )
+    connection.close()
+    if os.name != "nt":
+        os.chmod(database_path, 0o600)
+
+
+def _initialize_database_schema(connection):
     connection.executescript(
         """
         CREATE TABLE IF NOT EXISTS users (
@@ -208,16 +313,6 @@ def _initialize_database(app):
             ON puja_records(user_id, created_at DESC);
         """
     )
-    connection.execute(
-        """
-        INSERT OR IGNORE INTO wallet_accounts (user_id, balance_cents, updated_at)
-        SELECT id, 0, ? FROM users
-        """,
-        (datetime.now(timezone.utc).isoformat(),),
-    )
-    connection.close()
-    if os.name != "nt":
-        os.chmod(database_path, 0o600)
 
 
 def _json_object():
@@ -414,9 +509,10 @@ def _birthplace_location(connection, details, user_agent):
     location = geocode_birthplace(details, user_agent)
     connection.execute(
         """
-        INSERT OR IGNORE INTO birthplace_cache (
+        INSERT INTO birthplace_cache (
             location_key, latitude, longitude, timezone, created_at
         ) VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT (location_key) DO NOTHING
         """,
         (
             location_key,
@@ -485,10 +581,12 @@ def create_app(test_config=None):
 
     app.config.from_mapping(
         SECRET_KEY=secret_key,
+        DATABASE_URL=os.environ.get("DATABASE_URL", ""),
         DATABASE=os.environ.get(
             "T2J_DATABASE",
             str(private_dir / "talk2jyotisha.sqlite3"),
         ),
+        VERCEL_DEPLOYMENT=bool(os.environ.get("VERCEL")),
         DOCUMENTS_DIRECTORY=str(private_dir / "documents"),
         GEOCODER_USER_AGENT=os.environ.get("T2J_GEOCODER_USER_AGENT", ""),
         SESSION_COOKIE_HTTPONLY=True,
@@ -572,6 +670,11 @@ def create_app(test_config=None):
 
     @app.post("/api/signup")
     def signup():
+        if current_app.config["VERCEL_DEPLOYMENT"] and not current_app.config["DATABASE_URL"]:
+            return jsonify(
+                error="Account storage is not configured. Set DATABASE_URL to a persistent PostgreSQL database."
+            ), 503
+
         connection = _database_connection()
         attempt_key = _signup_attempt_key()
         if _is_signup_rate_limited(connection, attempt_key):
@@ -599,6 +702,7 @@ def create_app(test_config=None):
                 """
                 INSERT INTO users (email, full_name, password_hash, created_at)
                 VALUES (?, ?, ?, ?)
+                RETURNING id
                 """,
                 (
                     email,
@@ -607,14 +711,15 @@ def create_app(test_config=None):
                     datetime.now(timezone.utc).isoformat(),
                 ),
             )
-        except sqlite3.IntegrityError:
+        except (sqlite3.IntegrityError, psycopg.IntegrityError):
             return jsonify(error="An account with this email already exists. Please log in."), 409
 
-        user = User(cursor.lastrowid, email, full_name)
+        user = User(cursor.fetchone()["id"], email, full_name)
         connection.execute(
             """
             INSERT INTO wallet_accounts (user_id, balance_cents, updated_at)
             VALUES (?, 0, ?)
+            ON CONFLICT (user_id) DO NOTHING
             """,
             (user.id, datetime.now(timezone.utc).isoformat()),
         )
@@ -628,6 +733,11 @@ def create_app(test_config=None):
 
     @app.post("/api/login")
     def login():
+        if current_app.config["VERCEL_DEPLOYMENT"] and not current_app.config["DATABASE_URL"]:
+            return jsonify(
+                error="Account storage is not configured. Set DATABASE_URL to a persistent PostgreSQL database."
+            ), 503
+
         data = _json_object()
         email = data.get("email", "")
         password = data.get("password", "")
@@ -647,7 +757,7 @@ def create_app(test_config=None):
             return jsonify(error="Too many sign-in attempts. Please wait 15 minutes and try again."), 429
 
         user_row = connection.execute(
-            "SELECT id, email, full_name, password_hash FROM users WHERE email = ? COLLATE NOCASE",
+            "SELECT id, email, full_name, password_hash FROM users WHERE email = ?",
             (email,),
         ).fetchone()
         password_hash = (
@@ -908,6 +1018,7 @@ def create_app(test_config=None):
                     user_id, profile_hash, birth_profile_snapshot,
                     chart_json, generated_at
                 ) VALUES (?, ?, ?, ?, ?)
+                RETURNING id
                 """,
                 (
                     current_user.id,
@@ -917,13 +1028,14 @@ def create_app(test_config=None):
                     generated_at,
                 ),
             )
-            chart_id = chart_cursor.lastrowid
+            chart_id = chart_cursor.fetchone()["id"]
             document_cursor = connection.execute(
                 """
                 INSERT INTO documents (
                     user_id, chart_id, name, category, status,
                     file_key, media_type, created_at
                 ) VALUES (?, ?, ?, 'kundli', 'available', ?, 'application/pdf', ?)
+                RETURNING id
                 """,
                 (
                     current_user.id,
@@ -934,7 +1046,8 @@ def create_app(test_config=None):
                 ),
             )
             chart["chartId"] = chart_id
-            chart["documentId"] = document_cursor.lastrowid
+            document_id = document_cursor.fetchone()["id"]
+            chart["documentId"] = document_id
             connection.execute(
                 "UPDATE birth_charts SET chart_json = ? WHERE id = ?",
                 (json.dumps(chart, ensure_ascii=True), chart_id),
@@ -950,7 +1063,7 @@ def create_app(test_config=None):
 
         document = connection.execute(
             "SELECT id, name, category, status, created_at, chart_id FROM documents WHERE id = ? AND user_id = ?",
-            (document_cursor.lastrowid, current_user.id),
+            (document_id, current_user.id),
         ).fetchone()
         row = connection.execute(
             "SELECT id, chart_json, generated_at FROM birth_charts WHERE id = ? AND user_id = ?",
@@ -1026,8 +1139,9 @@ def create_app(test_config=None):
         connection = _database_connection()
         connection.execute(
             """
-            INSERT OR IGNORE INTO wallet_accounts (user_id, balance_cents, updated_at)
+            INSERT INTO wallet_accounts (user_id, balance_cents, updated_at)
             VALUES (?, 0, ?)
+            ON CONFLICT (user_id) DO NOTHING
             """,
             (current_user.id, datetime.now(timezone.utc).isoformat()),
         )
@@ -1137,6 +1251,7 @@ def create_app(test_config=None):
             INSERT INTO kundli_requests (
                 user_id, birth_details_snapshot, message, created_at
             ) VALUES (?, ?, ?, ?)
+            RETURNING id
             """,
             (
                 current_user.id,
@@ -1144,7 +1259,7 @@ def create_app(test_config=None):
                 message,
                 datetime.now(timezone.utc).isoformat(),
             ),
-        ).lastrowid
+        ).fetchone()["id"]
         return jsonify(
             requestId=request_id,
             status="pending",
