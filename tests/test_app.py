@@ -467,6 +467,13 @@ def test_postgres_sql_translation_preserves_ids_and_placeholders():
     assert "FROM users\n        WHERE TRUE\n        ON CONFLICT" in seed_query
 
 
+def test_postgres_row_factory_handles_commands_without_results():
+    class Cursor:
+        description = None
+
+    assert app_module._postgres_row_factory(Cursor())((1, 2)) == (1, 2)
+
+
 def test_unknown_api_route_returns_json_instead_of_html(client):
     response = client.get("/api/not-a-real-endpoint")
     assert response.status_code == 404
