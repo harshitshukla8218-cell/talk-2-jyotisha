@@ -566,7 +566,8 @@
             document.getElementById("authForm").reset();
         }
 
-        function openHistoryModal() {
+        async function openHistoryModal() {
+            await window.authReady;
             const listEl = document.getElementById("historyList");
             const email = getSession();
 
@@ -602,7 +603,7 @@
             openModal("orderModal");
         }
 
-        document.getElementById("orderForm").addEventListener("submit", function (e) {
+        document.getElementById("orderForm").addEventListener("submit", async function (e) {
             e.preventDefault();
             const name = document.getElementById("buyerName").value.trim();
             const phone = document.getElementById("buyerPhone").value.trim();
@@ -615,6 +616,7 @@
             pendingOrder = { name, phone, product, qty, amount: price * qty };
             closeModal("orderModal");
 
+            await window.authReady;
             if (!getSession()) {
                 resumeAfterAuth = true;
                 openAccountModal();

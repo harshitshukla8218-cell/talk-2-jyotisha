@@ -736,6 +736,8 @@ def create_app(test_config=None):
     @app.get("/api/dashboard")
     @login_required
     def dashboard_summary():
+        from birth_chart import name_based_rashi
+
         connection = _database_connection()
         profile_row = connection.execute(
             "SELECT * FROM birth_details WHERE user_id = ?",
@@ -768,10 +770,12 @@ def create_app(test_config=None):
         ).fetchone()
         chart = _chart_payload(chart_row)
         details = _details_from_row(profile_row)
+        display_name = details["fullName"] if details else current_user.full_name
         return jsonify(
             overview={
                 "profileComplete": details is not None,
                 "moonSign": chart["moonSign"] if chart else None,
+                "nameRashi": name_based_rashi(display_name),
                 "ascendant": chart["ascendant"]["sign"] if chart else None,
                 "nakshatra": chart["nakshatra"]["name"] if chart else None,
                 "chartGenerated": chart is not None,

@@ -5,7 +5,12 @@ import pytest
 
 import app as app_module
 from app import create_app
-from birth_chart import ChartInputError, _birth_time_utc, _lahiri_ayanamsa
+from birth_chart import (
+    ChartInputError,
+    _birth_time_utc,
+    _lahiri_ayanamsa,
+    name_based_rashi,
+)
 
 
 @pytest.fixture
@@ -313,6 +318,22 @@ def test_birth_details_are_validated_and_scoped_to_the_signed_in_user(client, ap
     assert row_count == 1
 
 
+def test_profile_name_changes_are_reflected_in_the_authenticated_account(client):
+    signup(client, "Original Name", "profile-name@example.com")
+    response = client.put(
+        "/api/profile",
+        json=valid_birth_details(name="Updated Name"),
+        headers={"X-CSRFToken": csrf(client)},
+    )
+
+    assert response.status_code == 200
+    assert response.get_json()["details"]["fullName"] == "Updated Name"
+    assert client.get("/api/me").get_json()["user"] == {
+        "email": "profile-name@example.com",
+        "fullName": "Updated Name",
+    }
+
+
 def test_kundli_request_uses_saved_profile_and_is_not_reported_as_confirmed(client, app):
     signup(client, "Test Person", "test@example.com")
     headers = {"X-CSRFToken": csrf(client)}
@@ -466,11 +487,31 @@ def test_dashboard_summary_and_puja_history_show_real_empty_state(client):
     assert overview["profileComplete"] is False
     assert overview["chartGenerated"] is False
     assert overview["moonSign"] is None
+    assert overview["nameRashi"] == {
+        "syllable": "po",
+        "signs": ["Kanya (Virgo)"],
+    }
     assert overview["documentCount"] == 0
     assert overview["completedPujas"] == 0
     assert overview["upcomingConsultations"] is None
     assert overview["walletBalanceCents"] == 0
     assert client.get("/api/pujas").get_json()["pujas"] == []
+
+
+def test_name_based_rashi_uses_first_syllable_and_reports_ambiguous_names():
+    assert name_based_rashi("Rohan Sharma") == {
+        "syllable": "ro",
+        "signs": ["Tula (Libra)"],
+    }
+    assert name_based_rashi("Tara") == {
+        "syllable": "ta",
+        "signs": ["Simha (Leo)", "Tula (Libra)"],
+    }
+    assert name_based_rashi("चूड़ामणि") == {
+        "syllable": "चू",
+        "signs": ["Mesha (Aries)"],
+    }
+    assert name_based_rashi("Smith") is None
 
 
 def test_chart_generation_rejects_missing_or_inexact_birth_time(client):

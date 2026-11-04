@@ -1,6 +1,7 @@
 import hashlib
 import json
 import math
+import unicodedata
 from html import escape
 from datetime import date, datetime, time, timezone
 from importlib.metadata import PackageNotFoundError, distribution
@@ -21,6 +22,20 @@ SIGNS = (
     "Kumbha (Aquarius)",
     "Meena (Pisces)",
 )
+NAME_RASHI_SYLLABLES = {
+    0: ("chu", "che", "cho", "la", "li", "lu", "le", "lo", "a", "चू", "चे", "चो", "ला", "ली", "लू", "ले", "लो", "अ", "आ"),
+    1: ("ee", "i", "u", "oo", "e", "ai", "o", "va", "vi", "vu", "ve", "vo", "ई", "इ", "उ", "ऊ", "ए", "ऐ", "ओ", "वा", "वि", "वु", "वे", "वो"),
+    2: ("ka", "ki", "ku", "gha", "nga", "chha", "ke", "ko", "ha", "hi", "का", "कि", "कु", "घ", "ङ", "छ", "के", "को", "हा", "ही"),
+    3: ("hu", "he", "ho", "da", "di", "du", "de", "do", "हु", "हे", "हो", "डा", "डी", "डु", "डे", "डो"),
+    4: ("ma", "mi", "mu", "me", "mo", "ta", "ti", "tu", "te", "मा", "मि", "मु", "मे", "मो", "टा", "टि", "टु", "ते"),
+    5: ("to", "pa", "pi", "pu", "sha", "na", "tha", "pe", "po", "टो", "पा", "पि", "पु", "ष", "ण", "ठ", "पे", "पो"),
+    6: ("ra", "ri", "ru", "re", "ro", "ta", "ti", "tu", "te", "रा", "रि", "रु", "रे", "रो", "ता", "ति", "तु", "ते"),
+    7: ("to", "na", "ni", "nu", "ne", "no", "ya", "yi", "yu", "टो", "ना", "नि", "नु", "ने", "नो", "या", "यि", "यु"),
+    8: ("ye", "yo", "bha", "bhi", "bhu", "dha", "pha", "dhaa", "bhe", "ये", "यो", "भा", "भि", "भु", "धा", "फा", "ढा", "भे"),
+    9: ("bho", "ja", "ji", "khi", "khu", "khe", "kho", "ga", "gi", "bho", "जा", "जि", "खी", "खु", "खे", "खो", "गा", "गि"),
+    10: ("gu", "ge", "go", "sa", "si", "su", "se", "so", "da", "di", "गु", "गे", "गो", "सा", "सि", "सु", "से", "सो", "दा", "दि"),
+    11: ("du", "tha", "jha", "na", "de", "do", "cha", "chi", "दु", "था", "झा", "ना", "दे", "दो", "चा", "चि"),
+}
 NAKSHATRAS = (
     "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashirsha", "Ardra",
     "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni",
@@ -55,6 +70,30 @@ class ChartConfigurationError(RuntimeError):
 
 class ChartInputError(ValueError):
     pass
+
+
+def name_based_rashi(name):
+    """Return possible name-syllable Rashis; this is not a birth-chart result."""
+    if not isinstance(name, str) or not name.strip():
+        return None
+
+    first_name = unicodedata.normalize("NFKC", name.strip().split()[0]).casefold()
+    matches = [
+        (len(syllable), syllable, sign_index)
+        for sign_index, syllables in NAME_RASHI_SYLLABLES.items()
+        for syllable in syllables
+        if first_name.startswith(syllable)
+    ]
+    if not matches:
+        return None
+
+    longest_match = max(match[0] for match in matches)
+    best_matches = [match for match in matches if match[0] == longest_match]
+    signs = sorted({match[2] for match in best_matches})
+    return {
+        "syllable": best_matches[0][1],
+        "signs": [SIGNS[sign_index] for sign_index in signs],
+    }
 
 
 def profile_fingerprint(details):

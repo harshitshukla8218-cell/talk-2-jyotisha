@@ -3,6 +3,7 @@
 
   let csrfToken = "";
   let authenticatedUser = null;
+  let sessionResolved = false;
   const form = document.getElementById("authForm");
   const accountModal = document.getElementById("accountModal");
   const errorBox = document.getElementById("authError");
@@ -46,11 +47,12 @@
       item.hidden = !authenticatedUser;
     });
     if (signupLink) {
-      signupLink.hidden = Boolean(authenticatedUser);
+      signupLink.hidden = !sessionResolved || Boolean(authenticatedUser);
     }
     if (!link) {
       return;
     }
+    link.hidden = !sessionResolved;
     if (authenticatedUser) {
       link.textContent = "Logout";
       link.href = "#";
@@ -70,6 +72,7 @@
 
   function setAuthenticatedUser(user) {
     authenticatedUser = user;
+    sessionResolved = true;
     window.authUser = user;
     // The marketing homepage is public. Authentication is only required
     // by the protected member routes enforced by the Flask backend.
@@ -152,9 +155,6 @@
     const firstField = mode === "signup" && nameInput
       ? nameInput
       : document.getElementById("authEmail");
-    if (accountModal && typeof accountModal.scrollIntoView === "function") {
-      accountModal.scrollIntoView({ block: "center" });
-    }
     if (firstField) {
       firstField.focus({ preventScroll: true });
     }
@@ -244,6 +244,8 @@
     }
     return target.pathname + target.search + target.hash;
   }
+
+  window.getPostAuthRedirect = safeRedirectTarget;
 
   if (form) {
     form.addEventListener("submit", async function (event) {

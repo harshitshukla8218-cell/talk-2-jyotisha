@@ -44,7 +44,6 @@
       line-height: 1.6;
       min-height: 100vh;
       overflow-x: hidden;
-      perspective: 1400px;
       position: relative;
     }
 
@@ -682,6 +681,8 @@
     .modal-box {
       width: 100%;
       max-width: 440px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
       background: linear-gradient(160deg, var(--panel-strong), var(--card));
       border: 1px solid var(--border);
       border-radius: 18px;
@@ -1370,7 +1371,8 @@
       document.getElementById("authForm").reset();
     }
 
-    function openHistoryModal() {
+    async function openHistoryModal() {
+      await window.authReady;
       const listEl = document.getElementById("historyList");
       const email = getSession();
 
@@ -1401,11 +1403,12 @@
       openModal("historyModal");
     }
 
-    document.getElementById("bookingForm").addEventListener("submit", function (e) {
+    document.getElementById("bookingForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
+      await window.authReady;
       if (!getSession()) {
-        window.requireAccountForBooking();
+        await window.requireAccountForBooking();
         return;
       }
 
@@ -1477,8 +1480,14 @@
     const authQuery = new URLSearchParams(window.location.search);
     if (authQuery.get("auth") === "required" || authQuery.has("next")) {
       window.addEventListener("load", function () {
-        window.openAccountModal("login");
-        window.showAuthError("Please log in to continue.");
+        window.authReady.then(function (user) {
+          if (user) {
+            window.location.replace(window.getPostAuthRedirect());
+            return;
+          }
+          window.openAccountModal("login");
+          window.showAuthError("Please log in to continue.");
+        });
       });
     }
 

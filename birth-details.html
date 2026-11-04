@@ -617,7 +617,7 @@
             <article class="stat-card"><span class="stat-label">Birth profile</span><strong class="stat-value" id="profileStatus">Pending</strong><p class="stat-note" id="profileStatusNote">Add your personal details to get started</p></article>
             <article class="stat-card"><span class="stat-label">Birth time</span><strong class="stat-value" id="birthTimeStat">Not added</strong><p class="stat-note">Used for more accurate chart preparation</p></article>
             <article class="stat-card"><span class="stat-label">Preferred language</span><strong class="stat-value" id="languageStat">Not set</strong><p class="stat-note">Your communication preference</p></article>
-            <article class="stat-card"><span class="stat-label">Moon sign / Rashi</span><strong class="stat-value" id="moonSignStat">Not Generated</strong><p class="stat-note">From your saved birth chart</p></article>
+            <article class="stat-card"><span class="stat-label" id="rashiStatLabel">Name-based Rashi</span><strong class="stat-value" id="moonSignStat">Calculating…</strong><p class="stat-note" id="rashiStatNote">Estimated from the first sound of your name.</p></article>
             <article class="stat-card"><span class="stat-label">Ascendant / Lagna</span><strong class="stat-value" id="ascendantStat">Not Generated</strong><p class="stat-note">From your saved birth chart</p></article>
             <article class="stat-card"><span class="stat-label">Nakshatra</span><strong class="stat-value" id="nakshatraStat">Not Generated</strong><p class="stat-note">From your saved birth chart</p></article>
             <article class="stat-card"><span class="stat-label">Wallet balance</span><strong class="stat-value" id="walletStat">$0.00</strong><p class="stat-note">Available balance</p></article>
@@ -895,6 +895,14 @@
     const chartStatus = document.getElementById("chartStatus");
     let hasDetails = false;
     let displayedChartMatchesProfile = false;
+    let nameRashiEstimate = "Not available";
+
+    function showNameRashiEstimate() {
+      document.getElementById("rashiStatLabel").textContent = "Name-based Rashi";
+      document.getElementById("rashiStatNote").textContent =
+        "Estimated from your name; a birth chart gives your actual Moon sign.";
+      setText("moonSignStat", nameRashiEstimate);
+    }
 
     function showStatus(message, isError) {
       statusMessage.textContent = message;
@@ -988,6 +996,8 @@
       setText("chartGeneratedAt", formatDate(chart.generatedAt));
       setText("chartTimezone", chart.location.timezone);
       setText("moonSignStat", chart.moonSign);
+      document.getElementById("rashiStatLabel").textContent = "Moon sign / Rashi";
+      document.getElementById("rashiStatNote").textContent = "From your saved birth chart";
       setText("ascendantStat", chart.ascendant.sign);
       setText("nakshatraStat", chart.nakshatra.name);
       renderKundliChart("rashiChart", chart.houses, "North Indian Rashi chart");
@@ -1051,9 +1061,10 @@
       } else {
         document.getElementById("chartPanel").hidden = true;
         document.getElementById("chartEmpty").hidden = false;
-        ["moonSignStat", "ascendantStat", "nakshatraStat"].forEach(function (id) {
+        ["ascendantStat", "nakshatraStat"].forEach(function (id) {
           setText(id, "Not Generated");
         });
+        showNameRashiEstimate();
       }
     }
 
@@ -1161,12 +1172,19 @@
     async function loadOverview() {
       const result = await window.apiRequest("/api/dashboard");
       const overview = result.overview;
+      const nameRashi = overview.nameRashi;
+      nameRashiEstimate = nameRashi && nameRashi.signs.length
+        ? nameRashi.signs.join(" / ")
+        : "Not available";
+      if (!overview.chartGenerated) {
+        showNameRashiEstimate();
+      }
       setText("documentStat", overview.documentCount);
       setText("pujaStat", overview.completedPujas);
       setText("consultStat", overview.upcomingConsultations == null ? "Not available" : overview.upcomingConsultations);
       setText("walletStat", formatMoney(overview.walletBalanceCents));
       if (!overview.chartGenerated) {
-        ["moonSignStat", "ascendantStat", "nakshatraStat"].forEach(function (id) {
+        ["ascendantStat", "nakshatraStat"].forEach(function (id) {
           setText(id, "Not Generated");
         });
       }
