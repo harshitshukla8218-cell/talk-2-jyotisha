@@ -33,6 +33,9 @@
   function updateNavAccountLink() {
     const link = document.getElementById("navAccountLink");
     const signupLink = document.getElementById("navSignupLink");
+    document.querySelectorAll("[data-auth-required]").forEach(function (item) {
+      item.hidden = !authenticatedUser;
+    });
     if (signupLink) {
       signupLink.hidden = Boolean(authenticatedUser);
     }
@@ -119,12 +122,21 @@
   };
   window.updateNavAccountLink = updateNavAccountLink;
   window.showAuthError = showError;
-  window.openAccountModal = function () {
+  window.openAccountModal = function (mode) {
     if (typeof window.switchAuthTab === "function") {
-      window.switchAuthTab("login");
+      window.switchAuthTab(mode || "login");
     }
     if (typeof window.openModal === "function") {
       window.openModal("accountModal");
+    }
+    const firstField = mode === "signup" && nameInput
+      ? nameInput
+      : document.getElementById("authEmail");
+    if (accountModal && typeof accountModal.scrollIntoView === "function") {
+      accountModal.scrollIntoView({ block: "center" });
+    }
+    if (firstField) {
+      firstField.focus({ preventScroll: true });
     }
   };
   window.logout = async function () {

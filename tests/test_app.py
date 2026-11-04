@@ -57,8 +57,10 @@ def valid_birth_details(name="A Test User"):
 def test_homepage_is_public_but_site_and_dashboard_pages_are_protected(client):
     assert client.get("/").status_code == 200
     response = client.get("/index.html")
-    assert b"gateLoginButton" in response.data
-    assert b"gateSignupButton" in response.data
+    assert b'id="navAccountLink"' in response.data
+    assert b'id="navSignupLink"' in response.data
+    assert b'data-auth-required hidden>Profile</a>' in response.data
+    assert b'data-auth-required hidden>My Dashboard</a>' in response.data
     assert b'onclick="openHistoryModal()">My Bookings</a>' not in response.data
 
     for path in (
@@ -93,7 +95,7 @@ def test_signup_hashes_password_and_rejects_duplicate_account(client, app):
     assert signup(client, "Test Person", "test@example.com").status_code == 409
 
 
-def test_signup_requires_valid_email_and_long_password(client):
+def test_signup_requires_valid_email_and_at_least_six_character_password(client):
     response = client.post(
         "/api/signup",
         json={"fullName": "Test Person", "email": "invalid", "password": "short"},
@@ -107,12 +109,23 @@ def test_signup_requires_valid_email_and_long_password(client):
         json={
             "fullName": "Test Person",
             "email": "test@example.com",
-            "password": "short",
+            "password": "12345",
         },
         headers={"X-CSRFToken": csrf(client)},
     )
     assert response.status_code == 400
-    assert "12" in response.get_json()["error"]
+    assert "6" in response.get_json()["error"]
+
+    response = client.post(
+        "/api/signup",
+        json={
+            "fullName": "Test Person",
+            "email": "test@example.com",
+            "password": "123456",
+        },
+        headers={"X-CSRFToken": csrf(client)},
+    )
+    assert response.status_code == 201
 
 
 def test_login_rejects_invalid_password_and_accepts_correct_password(client):

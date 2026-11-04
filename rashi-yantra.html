@@ -424,7 +424,7 @@
             <div class="nav-links">
                 <a class="back-link" href="index.html">← Back to Home</a>
                 <a href="javascript:void(0)" onclick="openHistoryModal()">My Orders</a>
-                <a href="birth-details.html">My Dashboard</a>
+                <a href="birth-details.html" data-auth-required hidden>My Dashboard</a>
                 <a href="javascript:void(0)" id="navAccountLink" onclick="openAccountModal()">Login</a>
             </div>
         </div>
@@ -479,7 +479,7 @@
                 </div>
                 <div class="auth-field">
                     <label for="authPassword">Password</label>
-                    <input type="password" id="authPassword" placeholder="Enter your password" autocomplete="current-password" minlength="12" maxlength="128" required />
+                    <input type="password" id="authPassword" placeholder="Enter your password" autocomplete="current-password" minlength="6" maxlength="128" required />
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-outline" onclick="closeModal('accountModal')">Cancel</button>

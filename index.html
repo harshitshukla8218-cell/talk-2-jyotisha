@@ -956,14 +956,14 @@
       <nav>
         <ul>
           <li><a href="#home">Home</a></li>
-          <li><a href="#profile">Profile</a></li>
+          <li><a href="#profile" data-auth-required hidden>Profile</a></li>
           <li><a href="#expertise">Expertise</a></li>
           <li><a href="#services">Services</a></li>
           <li><a href="#booking">Book Appointment</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a href="#" class="nav-auth-link" id="navAccountLink" onclick="event.preventDefault(); openAccountModal()">Login</a></li>
-          <li><a href="#" class="nav-auth-link nav-signup-link" id="navSignupLink" onclick="event.preventDefault(); switchAuthTab('signup'); openModal('accountModal')">Sign Up</a></li>
-          <li><a href="birth-details.html">My Dashboard</a></li>
+          <li><a href="#" class="nav-auth-link nav-signup-link" id="navSignupLink" onclick="event.preventDefault(); openAccountModal('signup')">Sign Up</a></li>
+          <li><a href="birth-details.html" data-auth-required hidden>My Dashboard</a></li>
         </ul>
       </nav>
     </div>
@@ -1253,8 +1253,8 @@
         </div>
         <div class="auth-field">
           <label for="authPassword">Password</label>
-          <input type="password" id="authPassword" placeholder="Enter your password" autocomplete="current-password" minlength="12" maxlength="128" required />
-          <p class="auth-password-hint">Use at least 12 characters when creating an account.</p>
+          <input type="password" id="authPassword" placeholder="Enter your password" autocomplete="current-password" minlength="6" maxlength="128" required />
+          <p class="auth-password-hint">Use at least 6 characters when creating an account.</p>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-outline" onclick="closeModal('accountModal')">Cancel</button>
@@ -1357,8 +1357,8 @@
       return JSON.parse(localStorage.getItem(BOOKINGS_KEY) || "[]");
     }
 
-    function openAccountModal() {
-      switchAuthTab("login");
+    function openAccountModal(mode) {
+      switchAuthTab(mode || "login");
       openModal("accountModal");
     }
 
