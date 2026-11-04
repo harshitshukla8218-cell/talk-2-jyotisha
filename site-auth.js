@@ -11,6 +11,15 @@
   const nameInput = document.getElementById("authName");
   const nameField = document.getElementById("signupNameField");
   const nextPath = new URLSearchParams(window.location.search).get("next");
+  const protectedPages = new Set([
+    "/astro-essentials.html",
+    "/birth-details.html",
+    "/exclusive-yantra.html",
+    "/kundli-report.html",
+    "/premium-gemstone.html",
+    "/rashi-yantra.html",
+    "/standard-gemstone.html"
+  ]);
 
   try {
     localStorage.removeItem("t2j_users");
@@ -108,6 +117,17 @@
     if (!response.ok) {
       const error = new Error(payload.error || "The request could not be completed.");
       error.status = response.status;
+      if (
+        response.status === 401 &&
+        path !== "/api/login" &&
+        protectedPages.has(window.location.pathname)
+      ) {
+        const returnPath =
+          window.location.pathname + window.location.search + window.location.hash;
+        window.location.replace(
+          "/index.html?auth=required&next=" + encodeURIComponent(returnPath)
+        );
+      }
       throw error;
     }
     return payload;
@@ -160,6 +180,28 @@
       return null;
     });
 
+  window.requireAccountForBooking = async function (event, serviceName) {
+    if (event) {
+      event.preventDefault();
+    }
+
+    const user = await window.authReady;
+    if (user) {
+      if (serviceName) {
+        document.getElementById("service").value = serviceName;
+        document.getElementById("booking").scrollIntoView({ behavior: "smooth" });
+      } else {
+        window.location.hash = "booking";
+      }
+      return true;
+    }
+
+    window.authNextPath = "/index.html#booking";
+    window.openAccountModal("signup");
+    showError("Please sign up or log in before booking an appointment.");
+    return false;
+  };
+
   function openAuthModal(mode) {
     if (typeof window.switchAuthTab === "function") {
       window.switchAuthTab(mode);
@@ -175,13 +217,14 @@
   }
 
   function safeRedirectTarget() {
-    if (!nextPath) {
+    const requestedPath = window.authNextPath || nextPath;
+    if (!requestedPath) {
       return "/birth-details.html";
     }
 
     let target;
     try {
-      target = new URL(nextPath, window.location.origin);
+      target = new URL(requestedPath, window.location.origin);
     } catch (error) {
       return "/index.html";
     }

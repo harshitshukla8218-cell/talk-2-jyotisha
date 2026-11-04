@@ -61,6 +61,10 @@ def test_homepage_is_public_but_site_and_dashboard_pages_are_protected(client):
     assert b'id="navSignupLink"' in response.data
     assert b'data-auth-required hidden>Profile</a>' in response.data
     assert b'data-auth-required hidden>My Dashboard</a>' in response.data
+    assert b'onclick="return requireAccountForBooking(event)"' in response.data
+    assert b"Please sign up or log in before booking an appointment." in client.get(
+        "/site-auth.js"
+    ).data
     assert b'onclick="openHistoryModal()">My Bookings</a>' not in response.data
 
     for path in (
@@ -163,6 +167,36 @@ def test_login_rejects_invalid_password_and_accepts_correct_password(client):
         b"Payment History",
     ):
         assert label in dashboard.data
+
+
+def test_login_survives_app_restart_with_persistent_database(client, app):
+    signup(client, "Persistent User", "persistent@example.com", "A-secure-test-password-123")
+
+    restarted_app = create_app(
+        {
+            "TESTING": True,
+            "SECRET_KEY": app.config["SECRET_KEY"],
+            "DATABASE": app.config["DATABASE"],
+            "DOCUMENTS_DIRECTORY": app.config["DOCUMENTS_DIRECTORY"],
+            "GEOCODER_USER_AGENT": app.config["GEOCODER_USER_AGENT"],
+            "WTF_CSRF_ENABLED": True,
+        }
+    )
+    restarted_client = restarted_app.test_client()
+    response = restarted_client.post(
+        "/api/login",
+        json={
+            "email": "persistent@example.com",
+            "password": "A-secure-test-password-123",
+        },
+        headers={"X-CSRFToken": csrf(restarted_client)},
+    )
+
+    assert response.status_code == 200
+    assert response.get_json()["user"] == {
+        "email": "persistent@example.com",
+        "fullName": "Persistent User",
+    }
     for path in (
         "/astro-essentials.html",
         "/exclusive-yantra.html",

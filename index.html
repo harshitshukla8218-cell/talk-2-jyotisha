@@ -959,7 +959,7 @@
           <li><a href="#profile" data-auth-required hidden>Profile</a></li>
           <li><a href="#expertise">Expertise</a></li>
           <li><a href="#services">Services</a></li>
-          <li><a href="#booking">Book Appointment</a></li>
+          <li><a href="#booking" onclick="return requireAccountForBooking(event)">Book Appointment</a></li>
           <li><a href="#contact">Contact</a></li>
           <li><a href="#" class="nav-auth-link" id="navAccountLink" onclick="event.preventDefault(); openAccountModal()">Login</a></li>
           <li><a href="#" class="nav-auth-link nav-signup-link" id="navSignupLink" onclick="event.preventDefault(); openAccountModal('signup')">Sign Up</a></li>
@@ -981,7 +981,7 @@
         and spiritual consultation for life's important decisions.
       </p>
       <div class="hero-actions">
-        <a href="#booking" class="btn">Book Your Appointment</a>
+        <a href="#booking" class="btn" onclick="return requireAccountForBooking(event)">Book Your Appointment</a>
         <a href="#categories" class="secondary-btn">Explore Remedies</a>
       </div>
       <div class="hero-stats">
@@ -1343,9 +1343,7 @@
 
   <script>
     function scrollToBooking(serviceName) {
-      const serviceSelect = document.getElementById("service");
-      serviceSelect.value = serviceName;
-      document.getElementById("booking").scrollIntoView({ behavior: "smooth" });
+      window.requireAccountForBooking(null, serviceName);
     }
 
     const BOOKINGS_KEY = "t2j_bookings";
@@ -1406,6 +1404,11 @@
     document.getElementById("bookingForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
+      if (!getSession()) {
+        window.requireAccountForBooking();
+        return;
+      }
+
       const name = document.getElementById("name").value.trim();
       const phone = document.getElementById("phone").value.trim();
       const service = document.getElementById("service").value;
@@ -1419,11 +1422,6 @@
       }
 
       pendingBooking = { name, phone, service, date, time, advance };
-
-      if (!getSession()) {
-        openAccountModal();
-        return;
-      }
 
       showPaymentModal();
     });
@@ -1474,6 +1472,14 @@
 
     function closeModal(id) {
       document.getElementById(id).classList.remove("active");
+    }
+
+    const authQuery = new URLSearchParams(window.location.search);
+    if (authQuery.get("auth") === "required" || authQuery.has("next")) {
+      window.addEventListener("load", function () {
+        window.openAccountModal("login");
+        window.showAuthError("Please log in to continue.");
+      });
     }
 
   </script>

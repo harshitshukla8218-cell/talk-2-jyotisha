@@ -1308,11 +1308,15 @@
 
     async function loadDashboard() {
       await window.authReady;
-      if (window.authUser) {
-        document.getElementById("pageTitle").textContent = "Welcome back, " + window.authUser.fullName;
-        document.getElementById("sideUserName").textContent = window.authUser.fullName;
-        document.getElementById("accountEmail").textContent = window.authUser.email || "Signed-in account";
+      if (!window.authUser) {
+        const nextPath = window.location.pathname + window.location.search + window.location.hash;
+        window.location.replace("/index.html?auth=required&next=" + encodeURIComponent(nextPath));
+        return;
       }
+
+      document.getElementById("pageTitle").textContent = "Welcome back, " + window.authUser.fullName;
+      document.getElementById("sideUserName").textContent = window.authUser.fullName;
+      document.getElementById("accountEmail").textContent = window.authUser.email || "Signed-in account";
       try {
         const result = await window.apiRequest("/api/profile");
         if (result.details) {
