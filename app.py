@@ -5,6 +5,7 @@ import os
 import re
 import secrets
 import sqlite3
+import threading
 import uuid
 from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
@@ -142,6 +143,11 @@ def _development_secret(private_dir):
 def _database_connection():
     if "database" not in g:
         if current_app.config["DATABASE_URL"]:
+            if not current_app.config["DATABASE_INITIALIZED"]:
+                with current_app.config["DATABASE_INIT_LOCK"]:
+                    if not current_app.config["DATABASE_INITIALIZED"]:
+                        _initialize_database(current_app._get_current_object())
+                        current_app.config["DATABASE_INITIALIZED"] = True
             g.database = _PostgresConnection(
                 psycopg.connect(
                     current_app.config["DATABASE_URL"],
@@ -170,16 +176,25 @@ def _initialize_database(app):
                 row_factory=_postgres_row_factory,
             )
         )
-        _initialize_database_schema(connection)
-        connection.execute(
-            """
-            INSERT INTO wallet_accounts (user_id, balance_cents, updated_at)
-            SELECT id, 0, ? FROM users
-            ON CONFLICT (user_id) DO NOTHING
-            """,
-            (datetime.now(timezone.utc).isoformat(),),
-        )
-        connection.close()
+        try:
+            connection.execute("BEGIN")
+            connection.execute("SELECT pg_advisory_xact_lock(72819463021)")
+            _initialize_database_schema(connection)
+            connection.execute(
+                """
+                INSERT INTO wallet_accounts (user_id, balance_cents, updated_at)
+                SELECT id, 0, ? FROM users
+                ON CONFLICT (user_id) DO NOTHING
+                """,
+                (datetime.now(timezone.utc).isoformat(),),
+            )
+            connection.execute("COMMIT")
+        except psycopg.Error:
+            if connection.in_transaction:
+                connection.execute("ROLLBACK")
+            raise
+        finally:
+            connection.close()
         return
 
     database_path = Path(app.config["DATABASE"])
@@ -582,6 +597,8 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY=secret_key,
         DATABASE_URL=os.environ.get("DATABASE_URL", ""),
+        DATABASE_INITIALIZED=False,
+        DATABASE_INIT_LOCK=threading.Lock(),
         DATABASE=os.environ.get(
             "T2J_DATABASE",
             str(private_dir / "talk2jyotisha.sqlite3"),
@@ -600,7 +617,9 @@ def create_app(test_config=None):
     if test_config:
         app.config.update(test_config)
     Path(app.config["DOCUMENTS_DIRECTORY"]).mkdir(mode=0o700, parents=True, exist_ok=True)
-    _initialize_database(app)
+    if not app.config["DATABASE_URL"]:
+        _initialize_database(app)
+        app.config["DATABASE_INITIALIZED"] = True
 
     CSRFProtect(app)
     login_manager = LoginManager(app)
@@ -629,6 +648,15 @@ def create_app(test_config=None):
         if request.path.startswith("/api/"):
             return jsonify(error="This request could not be verified. Reload the page and try again."), 400
         return error.description, 400
+
+    @app.errorhandler(psycopg.Error)
+    def database_error(error):
+        app.logger.exception("Persistent PostgreSQL storage is unavailable.")
+        if request.path.startswith("/api/"):
+            return jsonify(
+                error="Persistent account storage is unavailable. Check the Vercel DATABASE_URL setting and redeploy."
+            ), 503
+        return "Persistent account storage is temporarily unavailable.", 503
 
     @app.errorhandler(HTTPException)
     def http_error(error):

@@ -409,6 +409,32 @@ def test_vercel_auth_fails_clearly_without_persistent_database(client, app):
     assert "DATABASE_URL" in signup_response.get_json()["error"]
 
 
+def test_unavailable_postgres_does_not_take_down_public_site(client, app, monkeypatch):
+    app.config["DATABASE_URL"] = "postgresql://user:password@db.example.invalid/app"
+    app.config["DATABASE_INITIALIZED"] = False
+    app.config["VERCEL_DEPLOYMENT"] = True
+
+    def fail_connect(*_args, **_kwargs):
+        raise app_module.psycopg.OperationalError("database unavailable")
+
+    monkeypatch.setattr(app_module.psycopg, "connect", fail_connect)
+
+    assert client.get("/").status_code == 200
+    assert client.get("/site-auth.js").status_code == 200
+    response = client.post(
+        "/api/signup",
+        json={
+            "fullName": "Test Person",
+            "email": "test@example.com",
+            "password": "A-secure-test-password-123",
+        },
+        headers={"X-CSRFToken": csrf(client)},
+    )
+
+    assert response.status_code == 503
+    assert "DATABASE_URL" in response.get_json()["error"]
+
+
 def test_postgres_sql_translation_preserves_ids_and_placeholders():
     schema = app_module._postgres_sql(
         """
