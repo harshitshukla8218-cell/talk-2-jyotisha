@@ -635,6 +635,20 @@ def test_chart_generation_requires_geocoder_configuration(client, app):
     assert "T2J_GEOCODER_USER_AGENT" in response.get_json()["error"]
 
 
+def test_app_defaults_to_identifying_geocoder_user_agent(tmp_path, monkeypatch):
+    monkeypatch.delenv("T2J_GEOCODER_USER_AGENT", raising=False)
+    app = create_app(
+        {
+            "TESTING": True,
+            "SECRET_KEY": "test-key-not-used-outside-tests",
+            "DATABASE": str(tmp_path / "talk2jyotisha.sqlite3"),
+            "DOCUMENTS_DIRECTORY": str(tmp_path / "documents"),
+        }
+    )
+
+    assert app.config["GEOCODER_USER_AGENT"] == "Talk2Jyotisha/1.0"
+
+
 def test_birthplace_timezone_conversion_handles_daylight_saving_edges():
     assert 24.2 < _lahiri_ayanamsa(2451545.0 + 26 * 365.2425) < 24.3
     base = {

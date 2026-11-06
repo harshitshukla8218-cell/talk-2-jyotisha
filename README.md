@@ -17,7 +17,7 @@ The server creates `.t2j-private\secret.key` and `.t2j-private\talk2jyotisha.sql
 
 The existing member dashboard includes personal birth details, saved birth charts, private PDF documents, wallet and transaction history, consultation links, puja history, and astrology services. New tables are created with non-destructive `CREATE TABLE IF NOT EXISTS` statements; existing accounts and birth profiles are preserved. Generated chart PDFs are stored in `.t2j-private\documents`, never in the public static directory, and downloads are checked against the signed-in customer.
 
-To enable chart generation, configure an identifying OpenStreetMap Nominatim user agent before starting the server:
+Chart generation uses the identifying OpenStreetMap Nominatim user agent `Talk2Jyotisha/1.0` by default. You can override it before starting the server, for example to include a contact address:
 
 ```powershell
 $env:T2J_GEOCODER_USER_AGENT = "Talk2Jyotisha/1.0 (contact: you@example.com)"

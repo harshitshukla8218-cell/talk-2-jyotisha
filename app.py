@@ -608,7 +608,10 @@ def create_app(test_config=None):
         ),
         VERCEL_DEPLOYMENT=bool(os.environ.get("VERCEL")),
         DOCUMENTS_DIRECTORY=str(private_dir / "documents"),
-        GEOCODER_USER_AGENT=os.environ.get("T2J_GEOCODER_USER_AGENT", ""),
+        GEOCODER_USER_AGENT=os.environ.get(
+            "T2J_GEOCODER_USER_AGENT",
+            "Talk2Jyotisha/1.0",
+        ),
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE="Lax",
         SESSION_COOKIE_SECURE=production
