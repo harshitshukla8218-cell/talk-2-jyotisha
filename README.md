@@ -36,6 +36,26 @@ AI interpretation is not configured, so the portal reports that interpretation i
 - Vercel detects the Flask application from `index.py`. Configure `T2J_SECRET_KEY` and `DATABASE_URL` in the Vercel project environment variables; use a managed PostgreSQL provider such as Supabase or Neon. Vercel's `/tmp` storage is temporary and instance-local, so SQLite and generated PDFs are not persistent there. PostgreSQL keeps accounts and profiles available across instances; generated PDFs still need a persistent object/file store. Existing SQLite accounts are not migrated automatically and must sign up again after PostgreSQL is configured.
 - Email verification, password recovery, email delivery, and payment processing are not configured. Existing browser-only accounts cannot be migrated safely; users must sign up again.
 
-## Kundli report request
+## Email Notifications for Successful Payments & Bookings
 
-The site lists a 15-minute consultation at **$21**, but it has no configured price for a bundled detailed Kundli report and 15-minute consultation. The new request page deliberately does not invent a package price. It stores a pending request and the birth-profile snapshot; submitting the request does not confirm an appointment or report.
+When a client books a consultation or completes a payment, an automatic notification is sent to `khanna.manuj@gmail.com` containing all details:
+- Customer Name & Email
+- Phone Number
+- Selected Consultation Plan ($51 USD / 1-Hour Plan / $21 USD)
+- Payment / Advance Fee
+- Transaction ID & Timestamp
+- Preferred Date & Time
+- Client Concerns / Notes
+
+Notifications are logged persistently in `.t2j-private/payment_notifications.jsonl`. To deliver real-time emails to your inbox via Gmail / SMTP, configure the following environment variables:
+
+```powershell
+$env:ADMIN_EMAIL = "khanna.manuj@gmail.com"
+$env:SMTP_HOST = "smtp.gmail.com"
+$env:SMTP_PORT = "587"
+$env:SMTP_USER = "khanna.manuj@gmail.com"
+$env:SMTP_PASS = "your-gmail-app-password"
+$env:SMTP_FROM = "Talk2Jyotisha <khanna.manuj@gmail.com>"
+```
+
+*(Note: For Gmail, generate an App Password in your Google Account Security settings under 2-Step Verification -> App Passwords).*

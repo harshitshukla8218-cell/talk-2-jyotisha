@@ -654,6 +654,22 @@
             bookings.push({ email, product: pendingOrder.product, qty: pendingOrder.qty, amount: pendingOrder.amount, txnId, paidOn });
             localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
 
+            fetch("/api/payment-notification", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: pendingOrder.name,
+                    phone: pendingOrder.phone,
+                    email: email || pendingOrder.email,
+                    service: pendingOrder.product,
+                    amount: "\u20b9" + pendingOrder.amount,
+                    txnId: txnId,
+                    paidOn: paidOn
+                })
+            }).catch(function (err) {
+                console.warn("Payment notification error:", err);
+            });
+
             closeModal("paymentModal");
             openModal("creditModal");
             document.getElementById("orderForm").reset();

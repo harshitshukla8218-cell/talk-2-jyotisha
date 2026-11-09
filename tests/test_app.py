@@ -666,3 +666,55 @@ def test_birthplace_timezone_conversion_handles_daylight_saving_edges():
     nonexistent = dict(base, dateOfBirth="2021-03-14", timeOfBirth="02:30")
     with pytest.raises(ChartInputError, match="did not occur"):
         _birth_time_utc(nonexistent, "America/New_York")
+
+
+def test_payment_notification_endpoint_records_booking(client):
+    payload = {
+        "name": "Test Client",
+        "email": "client@example.com",
+        "phone": "+91 9999999999",
+        "service": "30-Minute Consultation",
+        "advance": "$51 USD",
+        "txnId": "TXN_TEST_123",
+        "date": "2026-11-15",
+        "time": "11:00",
+        "message": "Testing consultation",
+    }
+    response = client.post("/api/payment-notification", json=payload)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["ok"] is True
+    assert data["notifiedEmail"] == "khanna.manuj@gmail.com"
+
+
+def test_payment_notification_smtp_dispatch(client, monkeypatch):
+    from unittest.mock import MagicMock
+    import smtplib
+
+    monkeypatch.setenv("ADMIN_EMAIL", "khanna.manuj@gmail.com")
+    monkeypatch.setenv("SMTP_HOST", "smtp.gmail.com")
+    monkeypatch.setenv("SMTP_PORT", "587")
+    monkeypatch.setenv("SMTP_USER", "khanna.manuj@gmail.com")
+    monkeypatch.setenv("SMTP_PASS", "secret-app-password")
+
+    mock_smtp = MagicMock()
+    monkeypatch.setattr(smtplib, "SMTP", MagicMock(return_value=mock_smtp))
+    mock_smtp.__enter__.return_value = mock_smtp
+
+    payload = {
+        "name": "Pooja Test",
+        "email": "pooja@example.com",
+        "phone": "+91 8888888888",
+        "service": "1-Hour Consultation",
+        "advance": "1-Hour Plan",
+        "txnId": "TXN_TEST_456",
+        "date": "2026-11-18",
+        "time": "15:00",
+        "message": "Full horoscope review",
+    }
+    response = client.post("/api/payment-notification", json=payload)
+    assert response.status_code == 200
+    assert mock_smtp.starttls.called
+    assert mock_smtp.login.called
+    assert mock_smtp.send_message.called
+

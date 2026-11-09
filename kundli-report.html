@@ -242,8 +242,8 @@
       <section class="report-card" aria-labelledby="reportTitle">
         <p class="eyebrow">Personalized astrology service</p>
         <h1 id="reportTitle">Get Your Detailed Kundli Report</h1>
-        <p class="muted">Get a detailed birth-chart report along with a 15-minute astrology consultation.</p>
-        <p class="price-note">The existing website lists $21 for a standalone 15-minute consultation, but does not configure a price for the combined report and consultation. Please confirm the combined price before proceeding.</p>
+        <p class="muted">Get a detailed birth-chart report along with an astrology consultation.</p>
+        <p class="price-note">For a standalone Pay-As-You-Go consultation ($21 USD), you can <a href="https://www.advproactsol.com/Pay-As-You-Go.php" target="_blank" rel="noopener noreferrer" style="color:#f6c76a;text-decoration:underline;">pay directly via the payment gateway</a>.</p>
 
         <div id="birthSummary" class="birth-summary" hidden>
           <h2>Birth details from your profile</h2>
@@ -319,6 +319,21 @@
         const result = await window.apiRequest("/api/kundli-requests", {
           method: "POST",
           body: { message: document.getElementById("requestMessage").value.trim() }
+        });
+        fetch("/api/payment-notification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: "Member Request",
+            email: window.getSession() || "Registered Member",
+            service: "Detailed Kundli Report Request",
+            advance: "Request Submitted",
+            txnId: "KUNDLI-" + (result.requestId || Date.now()),
+            paidOn: new Date().toLocaleString(),
+            message: document.getElementById("requestMessage").value.trim()
+          })
+        }).catch(function (err) {
+          console.warn("Kundli notification error:", err);
         });
         showRequestStatus(result.message, false);
         requestForm.reset();

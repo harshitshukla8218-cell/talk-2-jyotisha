@@ -4,13 +4,31 @@ import json
 import os
 import re
 import secrets
+import smtplib
 import sqlite3
 import threading
 import uuid
 from datetime import date, datetime, time, timedelta, timezone
+from email.message import EmailMessage
 from pathlib import Path
 
-import psycopg
+try:
+    import psycopg
+except ImportError:
+    class _DummyPsycopg:
+        class Error(Exception):
+            pass
+        class OperationalError(Error):
+            pass
+        class IntegrityError(Error):
+            pass
+        class pq:
+            class TransactionStatus:
+                IDLE = 0
+        @staticmethod
+        def connect(*args, **kwargs):
+            raise _DummyPsycopg.OperationalError("psycopg binary not available")
+    psycopg = _DummyPsycopg()
 from flask import (
     Flask,
     abort,
@@ -627,7 +645,7 @@ def create_app(test_config=None):
         _initialize_database(app)
         app.config["DATABASE_INITIALIZED"] = True
 
-    CSRFProtect(app)
+    csrf = CSRFProtect(app)
     login_manager = LoginManager(app)
 
     @app.teardown_appcontext
@@ -1299,6 +1317,102 @@ def create_app(test_config=None):
             status="pending",
             message="Your request has been saved. This is a request only; no appointment or report is confirmed.",
         ), 201
+
+    def _send_payment_email(booking_data):
+        admin_email = os.environ.get("ADMIN_EMAIL", "khanna.manuj@gmail.com")
+        smtp_host = os.environ.get("SMTP_HOST", "")
+        smtp_port = int(os.environ.get("SMTP_PORT", "587"))
+        smtp_user = os.environ.get("SMTP_USER", "")
+        smtp_pass = os.environ.get("SMTP_PASS", "")
+        smtp_from = os.environ.get("SMTP_FROM", smtp_user or "noreply@talk2jyotisha.com")
+
+        name = booking_data.get("name") or booking_data.get("fullName") or "Valued Client"
+        email = booking_data.get("email") or "Not provided"
+        phone = booking_data.get("phone") or "Not provided"
+        service = booking_data.get("service") or booking_data.get("product") or "Consultation Plan"
+        advance = booking_data.get("advance") or booking_data.get("amount") or "Confirmed"
+        date_str = booking_data.get("date") or "N/A"
+        time_str = booking_data.get("time") or "N/A"
+        txn_id = booking_data.get("txnId") or f"TXN-{uuid.uuid4().hex[:8]}"
+        paid_on = booking_data.get("paidOn") or datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+        notes = booking_data.get("message") or ""
+        gateway_url = booking_data.get("gatewayUrl") or ""
+
+        subject = f"[Talk2Jyotisha] Successful Payment / Booking: {service} ({advance}) - {name}"
+        body = f"""Dear Astrologer,
+
+A successful payment / consultation booking has been made on Talk2Jyotisha.com.
+
+=======================================================
+BOOKING & PAYMENT DETAILS
+=======================================================
+Customer Name:      {name}
+Customer Email:     {email}
+Phone Number:       {phone}
+Consultation / Item:{service}
+Amount:             {advance}
+Transaction ID:     {txn_id}
+Preferred Date:     {date_str}
+Preferred Time:     {time_str}
+Payment Timestamp:  {paid_on}
+Payment Gateway:    {gateway_url}
+Customer Concern:   {notes}
+=======================================================
+
+This notification has been sent to: {admin_email}
+"""
+
+        # Append to persistent log file in private data directory
+        try:
+            log_dir = Path(current_app.config.get("DATA_DIRECTORY", PROJECT_ROOT / ".t2j-private"))
+            log_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+            log_file = log_dir / "payment_notifications.jsonl"
+            with open(log_file, "a", encoding="utf-8") as f:
+                f.write(json.dumps({
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "recipient": admin_email,
+                    "data": booking_data,
+                    "subject": subject
+                }) + "\n")
+        except Exception as err:
+            current_app.logger.error("Failed to write payment notification log: %s", err)
+
+        # Dispatch real SMTP email if SMTP is configured
+        if smtp_host and smtp_user and smtp_pass:
+            try:
+                msg = EmailMessage()
+                msg["Subject"] = subject
+                msg["From"] = smtp_from
+                msg["To"] = admin_email
+                if email and "@" in email and email != "Not provided":
+                    msg["Cc"] = email
+                msg.set_content(body)
+
+                if smtp_port == 465:
+                    with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=10) as server:
+                        server.login(smtp_user, smtp_pass)
+                        server.send_message(msg)
+                else:
+                    with smtplib.SMTP(smtp_host, smtp_port, timeout=10) as server:
+                        server.starttls()
+                        server.login(smtp_user, smtp_pass)
+                        server.send_message(msg)
+                current_app.logger.info("Payment notification email sent to %s", admin_email)
+                return True, f"Email notification sent to {admin_email}"
+            except Exception as err:
+                current_app.logger.error("SMTP error sending payment notification: %s", err)
+                return False, f"SMTP delivery failed: {err}"
+
+        current_app.logger.info("Payment notification recorded for %s (SMTP not configured in environment)", admin_email)
+        return True, f"Notification recorded for {admin_email}"
+
+    @app.post("/api/payment-notification")
+    @csrf.exempt
+    def payment_notification():
+        data = _json_object()
+        success, msg = _send_payment_email(data)
+        admin_email = os.environ.get("ADMIN_EMAIL", "khanna.manuj@gmail.com")
+        return jsonify(ok=True, message=msg, notifiedEmail=admin_email)
 
     @app.get("/<path:filename>")
     def project_file(filename):

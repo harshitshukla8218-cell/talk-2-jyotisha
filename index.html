@@ -514,6 +514,9 @@
     }
 
     .service-btn {
+      display: inline-block;
+      text-decoration: none;
+      text-align: center;
       margin-top: 16px;
       background: linear-gradient(135deg, var(--purple), #ff7a59);
       color: #fff;
@@ -528,6 +531,17 @@
     .service-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 14px 24px rgba(255, 92, 92, 0.24);
+      color: #fff;
+    }
+
+    .service-action-note {
+      margin-top: 10px;
+    }
+
+    .service-action-note a {
+      color: var(--gold);
+      font-size: 13px;
+      text-decoration: underline;
     }
 
     .booking-box {
@@ -1147,19 +1161,22 @@
           <h3>30-Minute Consultation</h3>
           <div class="price">$51 USD</div>
           <p>Focused guidance for one main concern, including career, marriage, finance, or family matters.</p>
-          <button class="service-btn" onclick="scrollToBooking('30-Minute Consultation')">Book Now</button>
+          <a class="service-btn" href="https://www.advproactsol.com/30-Minute_Consultation.php" target="_blank" rel="noopener noreferrer" onclick="recordDirectGatewayClick('30-Minute Consultation', '$51 USD', 'https://www.advproactsol.com/30-Minute_Consultation.php')">Pay Now ($51 USD)</a>
+          <div class="service-action-note"><a href="#booking" onclick="scrollToBooking('30-Minute Consultation')">Or Schedule Slot First</a></div>
         </div>
         <div class="card">
           <h3>1-Hour Consultation</h3>
-          <div class="price">$101 USD</div>
+          <div class="price">1-Hour Plan</div>
           <p>Detailed horoscope-based guidance across important areas of life.</p>
-          <button class="service-btn" onclick="scrollToBooking('1-Hour Consultation')">Book Now</button>
+          <a class="service-btn" href="https://www.advproactsol.com/1-Hour_Consultation.php" target="_blank" rel="noopener noreferrer" onclick="recordDirectGatewayClick('1-Hour Consultation', '1-Hour Plan', 'https://www.advproactsol.com/1-Hour_Consultation.php')">Pay Now (1-Hour Plan)</a>
+          <div class="service-action-note"><a href="#booking" onclick="scrollToBooking('1-Hour Consultation')">Or Schedule Slot First</a></div>
         </div>
         <div class="card">
-          <h3>15-Minute Consultation</h3>
+          <h3>Pay-As-You-Go Consultation</h3>
           <div class="price">$21 USD</div>
           <p>Quick, focused online guidance for one important question or immediate direction.</p>
-          <button class="service-btn" onclick="scrollToBooking('15-Minute Consultation')">Book Now</button>
+          <a class="service-btn" href="https://www.advproactsol.com/Pay-As-You-Go.php" target="_blank" rel="noopener noreferrer" onclick="recordDirectGatewayClick('Pay-As-You-Go Consultation', '$21 USD', 'https://www.advproactsol.com/Pay-As-You-Go.php')">Pay Now ($21 USD)</a>
+          <div class="service-action-note"><a href="#booking" onclick="scrollToBooking('Pay-As-You-Go Consultation')">Or Schedule Slot First</a></div>
         </div>
       </div>
     </div>
@@ -1195,9 +1212,9 @@
               <label for="service">Consultation Type</label>
               <select id="service" required>
                 <option value="">Select service</option>
-                <option>30-Minute Consultation</option>
-                <option>1-Hour Consultation</option>
-                <option>Pay-As-You-Go Consultation</option>
+                <option value="30-Minute Consultation">30-Minute Consultation ($51 USD)</option>
+                <option value="1-Hour Consultation">1-Hour Consultation (1-Hour Plan)</option>
+                <option value="Pay-As-You-Go Consultation">Pay-As-You-Go Consultation ($21 USD)</option>
               </select>
             </div>
             <div>
@@ -1209,12 +1226,12 @@
               <input type="time" id="time" required />
             </div>
             <div>
-              <label for="advance">Advance Payment</label>
+              <label for="advance">Consultation Fee</label>
               <select id="advance" required>
-                <option value="">Select advance amount</option>
-                <option>₹300</option>
-                <option>₹500</option>
-                <option>₹700</option>
+                <option value="">Select consultation plan</option>
+                <option value="$51 USD">$51 USD (30-Minute Consultation)</option>
+                <option value="1-Hour Plan">1-Hour Plan (1-Hour Consultation)</option>
+                <option value="$21 USD">$21 USD (Pay-As-You-Go)</option>
               </select>
             </div>
             <div class="full">
@@ -1224,12 +1241,12 @@
           </div>
 
           <div class="advance-box">
-            <strong>Advance Booking Policy:</strong> An advance payment is required
-            to confirm the appointment slot. Your slot will be reserved only after
+            <strong>Advance Booking Policy:</strong> Payment via our secure gateway is required
+            to confirm the appointment slot. Your slot will be reserved upon
             payment confirmation.
           </div>
 
-          <button type="submit" class="btn">Pay Advance and Book Slot</button>
+          <button type="submit" class="btn">Proceed to Payment &amp; Book Slot</button>
         </form>
       </div>
     </div>
@@ -1282,7 +1299,7 @@
       <div class="modal-amount" id="paymentAmount"></div>
       <div class="modal-actions">
         <button type="button" class="btn-outline" onclick="closeModal('paymentModal')">Cancel</button>
-        <button type="button" class="btn" onclick="processPayment()">Pay Now</button>
+        <button type="button" class="btn" onclick="processPayment()">Proceed to Payment Gateway</button>
       </div>
     </div>
   </div>
@@ -1330,6 +1347,10 @@
       <div class="footer-copy">
         <strong>Talk2Jyotisha</strong>
         <span>Traditional Jyotish guidance for peace, progress and positive direction.</span>
+        <div style="margin-top: 8px; font-size: 14px;">
+          <span style="color: rgba(255,255,255,0.7);">Contact &amp; Support: </span>
+          <a href="mailto:khanna.manuj@gmail.com" style="color: #f6c76a; text-decoration: underline;">khanna.manuj@gmail.com</a>
+        </div>
       </div>
       <div class="social-links" aria-label="Social media links">
         <a class="social-link" href="https://www.instagram.com/talk2jyotisha/" target="_blank" rel="noopener noreferrer" aria-label="Visit Talk2Jyotisha on Instagram" title="Instagram">
@@ -1343,8 +1364,36 @@
   </footer>
 
   <script>
+    const PAYMENT_GATEWAYS = {
+      "30-Minute Consultation": "https://www.advproactsol.com/30-Minute_Consultation.php",
+      "1-Hour Consultation": "https://www.advproactsol.com/1-Hour_Consultation.php",
+      "Pay-As-You-Go Consultation": "https://www.advproactsol.com/Pay-As-You-Go.php",
+      "15-Minute Consultation": "https://www.advproactsol.com/Pay-As-You-Go.php"
+    };
+
     function scrollToBooking(serviceName) {
+      if (serviceName) {
+        const sSelect = document.getElementById("service");
+        if (sSelect) {
+          sSelect.value = serviceName;
+          sSelect.dispatchEvent(new Event("change"));
+        }
+      }
       window.requireAccountForBooking(null, serviceName);
+    }
+
+    const serviceSelectEl = document.getElementById("service");
+    const advanceSelectEl = document.getElementById("advance");
+    if (serviceSelectEl && advanceSelectEl) {
+      serviceSelectEl.addEventListener("change", function () {
+        if (this.value === "30-Minute Consultation") {
+          advanceSelectEl.value = "$51 USD";
+        } else if (this.value === "1-Hour Consultation") {
+          advanceSelectEl.value = "1-Hour Plan";
+        } else if (this.value === "Pay-As-You-Go Consultation" || this.value === "15-Minute Consultation") {
+          advanceSelectEl.value = "$21 USD";
+        }
+      });
     }
 
     const BOOKINGS_KEY = "t2j_bookings";
@@ -1431,15 +1480,36 @@
 
     function showPaymentModal() {
       const { name, service, date, time, advance } = pendingBooking;
+      const targetUrl = PAYMENT_GATEWAYS[service] || "https://www.advproactsol.com/30-Minute_Consultation.php";
 
       document.getElementById("paymentSummary").innerHTML =
         "<div><span>Name</span><span>" + name + "</span></div>" +
         "<div><span>Service</span><span>" + service + "</span></div>" +
         "<div><span>Date</span><span>" + date + "</span></div>" +
-        "<div><span>Time</span><span>" + time + "</span></div>";
+        "<div><span>Time</span><span>" + time + "</span></div>" +
+        "<div><span>Gateway</span><span>" + targetUrl + "</span></div>";
       document.getElementById("paymentAmount").textContent = advance;
 
       openModal("paymentModal");
+    }
+
+    function recordDirectGatewayClick(service, amount, gatewayUrl) {
+      const email = getSession();
+      fetch("/api/payment-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "Direct Gateway User",
+          email: email || "Direct Gateway Visitor",
+          service: service,
+          advance: amount,
+          txnId: "DIRECT-" + Date.now(),
+          paidOn: new Date().toLocaleString(),
+          gatewayUrl: gatewayUrl
+        })
+      }).catch(function (err) {
+        console.warn("Direct notification error:", err);
+      });
     }
 
     function processPayment() {
@@ -1448,21 +1518,42 @@
       const txnId = "TXN" + Date.now();
       const paidOn = new Date().toLocaleString();
       const email = getSession();
+      const targetGateway = PAYMENT_GATEWAYS[pendingBooking.service] || "https://www.advproactsol.com/30-Minute_Consultation.php";
 
-      document.getElementById("txnId").textContent = "Transaction ID: " + txnId;
+      // Dispatch email notification to backend (sent to khanna.manuj@gmail.com)
+      fetch("/api/payment-notification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...pendingBooking,
+          email: email || pendingBooking.email,
+          txnId: txnId,
+          paidOn: paidOn,
+          gatewayUrl: targetGateway
+        })
+      }).catch(function (err) {
+        console.warn("Payment notification error:", err);
+      });
+
+      const bookings = getBookings();
+      bookings.push({ email, ...pendingBooking, txnId, paidOn, gatewayUrl: targetGateway });
+      localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
+
+      closeModal("paymentModal");
+
+      // Open payment gateway in a new tab
+      window.open(targetGateway, "_blank", "noopener,noreferrer");
+
+      document.getElementById("txnId").textContent = "Appointment reserved: " + txnId;
       document.getElementById("creditSummary").innerHTML =
         "<div><span>Name</span><span>" + pendingBooking.name + "</span></div>" +
         "<div><span>Service</span><span>" + pendingBooking.service + "</span></div>" +
         "<div><span>Date</span><span>" + pendingBooking.date + "</span></div>" +
         "<div><span>Time</span><span>" + pendingBooking.time + "</span></div>" +
-        "<div><span>Paid On</span><span>" + paidOn + "</span></div>";
-      document.getElementById("creditAmount").textContent = "Amount Paid: " + pendingBooking.advance;
+        "<div><span>Email Status</span><span>Confirmation notification dispatched</span></div>" +
+        "<div><span>Gateway Link</span><span><a href=\"" + targetGateway + "\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:#f6c76a;text-decoration:underline;\">Open Payment Gateway</a></span></div>";
+      document.getElementById("creditAmount").textContent = "Amount: " + pendingBooking.advance;
 
-      const bookings = getBookings();
-      bookings.push({ email, ...pendingBooking, txnId, paidOn });
-      localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
-
-      closeModal("paymentModal");
       openModal("creditModal");
 
       document.getElementById("bookingForm").reset();
