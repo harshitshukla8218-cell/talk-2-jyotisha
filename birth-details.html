@@ -568,11 +568,18 @@
     .chart-history-label { display:block; margin-top:18px; color:#aaa; font-weight:700; }
     .chart-history-label + select { margin-top:7px; }
     #chartStatus.error,#documentStatus.error { color:#ff9a9a; border-color:rgba(255,154,154,.5); background:rgba(255,92,92,.08); }
-    .consultation-actions { display:flex; flex-direction:column; gap:10px; margin-top:14px; max-width:320px; }
-    .consultation-actions .service-link { display:inline-flex; align-items:center; justify-content:center; padding:10px 16px; border-radius:9px; color:#17130b; background:linear-gradient(135deg,#e8c77b,#b88d3e); font-weight:700; text-decoration:none; font-size:13px; transition:transform .2s ease; }
-    .consultation-actions .service-link:hover { transform:translateY(-1px); }
-    .consultation-actions .service-link.schedule-link { background:transparent; color:#e8c77b; border:1px solid #66542e; }
-    .consultation-actions .service-link.schedule-link:hover { background:#262116; }
+    .consultation-list { display:flex; flex-direction:column; gap:12px; margin-top:16px; max-width:620px; }
+    .consultation-item { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:14px 18px; background:#141414; border:1px solid #303030; border-radius:12px; transition:border-color .2s ease; }
+    .consultation-item:hover { border-color:#66542e; }
+    .consultation-info { display:flex; flex-direction:column; gap:3px; }
+    .consultation-info strong { color:#f5f1eb; font-size:15px; }
+    .consultation-price { color:#e8c77b; font-size:14px; font-weight:700; }
+    .consultation-sub { color:#999; font-size:12px; }
+    .consultation-item .service-link { display:inline-flex; align-items:center; justify-content:center; padding:9px 18px; border-radius:9px; color:#17130b; background:linear-gradient(135deg,#e8c77b,#b88d3e); font-weight:700; text-decoration:none; font-size:13px; white-space:nowrap; transition:transform .2s ease, box-shadow .2s ease; }
+    .consultation-item .service-link:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(232,199,123,.25); }
+    .consultation-item .service-link.schedule-link { background:transparent; color:#e8c77b; border:1px solid #66542e; }
+    .consultation-item .service-link.schedule-link:hover { background:#262116; }
+    @media(max-width:500px) { .consultation-item { flex-direction:column; align-items:flex-start; } .consultation-item .service-link { width:100%; text-align:center; } }
     @media(max-width:850px) { .dashboard-shell{grid-template-columns:minmax(0,1fr)}.sidebar{position:static;min-height:0}.side-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.side-name{margin-bottom:12px}.side-logout{margin-top:8px}.dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))} }
     @media(max-width:600px) { .dashboard-grid,.service-grid,.detail-list,.dashboard-stats,.chart-grid,.chart-overview,.wallet-summary,.document-list{grid-template-columns:minmax(0,1fr)}.side-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.welcome-card,.personal-card,.portal-card{grid-column:auto}.account-strip{display:block}.account-strip>div+div{margin-top:14px}.section-title-row{display:block}.section-title-row button{margin-top:12px}.document-filters,.wallet-topup-fields{grid-template-columns:minmax(0,1fr)}.document-filters label,.document-filters label[for="documentCategory"],.document-filters input,.document-filters select,.document-filters button{grid-column:1;grid-row:auto}.portal-table{min-width:640px} }
 
@@ -859,11 +866,38 @@
           <p class="eyebrow">Appointments</p>
           <h2 id="consultationsTitle">Consultations</h2>
           <p class="section-copy">Choose a consultation plan to pay directly or book an appointment slot:</p>
-          <div class="consultation-actions">
-            <a class="service-link" href="https://www.advproactsol.com/30-Minute_Consultation.php" target="_blank" rel="noopener noreferrer">30-Minute Plan ($51 USD)</a>
-            <a class="service-link" href="https://www.advproactsol.com/1-Hour_Consultation.php" target="_blank" rel="noopener noreferrer">1-Hour Plan</a>
-            <a class="service-link" href="https://www.advproactsol.com/Pay-As-You-Go.php" target="_blank" rel="noopener noreferrer">Pay-As-You-Go ($21 USD)</a>
-            <a class="service-link schedule-link" href="index.html#booking">Schedule Appointment</a>
+          <div class="consultation-list">
+            <div class="consultation-item">
+              <div class="consultation-info">
+                <strong>30-Minute Consultation</strong>
+                <span class="consultation-price">$51 USD</span>
+              </div>
+              <a class="service-link" href="https://www.advproactsol.com/30-Minute_Consultation.php" target="_blank" rel="noopener noreferrer">Pay $51 USD</a>
+            </div>
+
+            <div class="consultation-item">
+              <div class="consultation-info">
+                <strong>1-Hour Consultation</strong>
+                <span class="consultation-price">1-Hour Plan</span>
+              </div>
+              <a class="service-link" href="https://www.advproactsol.com/1-Hour_Consultation.php" target="_blank" rel="noopener noreferrer">Pay 1-Hour Plan</a>
+            </div>
+
+            <div class="consultation-item">
+              <div class="consultation-info">
+                <strong>Pay-As-You-Go Consultation</strong>
+                <span class="consultation-price">$21 USD</span>
+              </div>
+              <a class="service-link" href="https://www.advproactsol.com/Pay-As-You-Go.php" target="_blank" rel="noopener noreferrer">Pay $21 USD</a>
+            </div>
+
+            <div class="consultation-item">
+              <div class="consultation-info">
+                <strong>Schedule Consultation Slot</strong>
+                <span class="consultation-sub">Choose date &amp; time</span>
+              </div>
+              <a class="service-link schedule-link" href="index.html#booking">Book Slot</a>
+            </div>
           </div>
         </section>
         <section class="portal-card" id="pujaHistory" aria-labelledby="pujaHistoryTitle">
