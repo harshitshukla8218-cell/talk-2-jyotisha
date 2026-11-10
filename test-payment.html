@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment & Email Delivery Test Tool - Talk2Jyotisha</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background: #120b18; color: #f4eee3; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+    .card { background: #1d1426; border: 1px solid #3b284c; border-radius: 16px; max-width: 640px; width: 100%; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    h1 { color: #f6c76a; font-size: 24px; margin-bottom: 8px; }
+    p.subtitle { color: #a89bb6; font-size: 14px; margin-bottom: 24px; line-height: 1.5; }
+    .badge { display: inline-block; background: rgba(246, 199, 106, 0.15); color: #f6c76a; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-bottom: 16px; }
+    .btn { display: block; width: 100%; background: linear-gradient(135deg, #e8c77b, #b88d3e); color: #17130b; padding: 14px 20px; font-size: 16px; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; text-align: center; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232, 199, 123, 0.3); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .result-box { margin-top: 24px; padding: 20px; border-radius: 10px; background: #130a1c; border: 1px solid #2f203d; display: none; }
+    .result-box.active { display: block; }
+    .status-badge { display: inline-block; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; margin-bottom: 12px; }
+    .status-success { background: rgba(46, 204, 113, 0.2); color: #2ecc71; border: 1px solid #2ecc71; }
+    .status-warning { background: rgba(241, 196, 15, 0.2); color: #f1c40f; border: 1px solid #f1c40f; }
+    .status-error { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border: 1px solid #e74c3c; }
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #251833; font-size: 14px; }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { color: #a89bb6; }
+    .info-val { color: #f4eee3; font-weight: 600; text-align: right; }
+    .setup-guide { margin-top: 24px; padding: 16px; background: #160e20; border-radius: 8px; border-left: 4px solid #f6c76a; font-size: 13px; line-height: 1.6; color: #cfc2df; }
+    .setup-guide strong { color: #f6c76a; }
+    .setup-guide ol { margin-left: 20px; margin-top: 8px; }
+    .back-link { display: inline-block; margin-top: 20px; color: #f6c76a; text-decoration: none; font-size: 14px; }
+    .back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">FREE PAYMENT &amp; EMAIL TEST TOOL (₹0 Cost)</div>
+    <h1>Payment &amp; Email Delivery Test</h1>
+    <p class="subtitle">
+      Test the complete payment confirmation flow and email notification without spending any real money. Clicking below simulates a live payment of <strong>$51 USD</strong> and triggers an instant notification to <strong>khanna.manuj@gmail.com</strong>.
+    </p>
+
+    <button id="testBtn" class="btn" onclick="runEmailTest()">Trigger Free Test Payment Now</button>
+
+    <div id="resultBox" class="result-box">
+      <div id="statusBadge" class="status-badge">Processing...</div>
+      <div class="info-row">
+        <span class="info-label">Recipient Email</span>
+        <span id="targetEmail" class="info-val">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Simulated Plan</span>
+        <span id="simPlan" class="info-val">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Transaction ID</span>
+        <span id="txnId" class="info-val">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">SMTP Connection</span>
+        <span id="smtpStatus" class="info-val">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Server Message</span>
+        <span id="serverMsg" class="info-val" style="color:#f6c76a;">-</span>
+      </div>
+    </div>
+
+    <div class="setup-guide">
+      <strong>How Real Gmail Delivery Works:</strong>
+      <ol>
+        <li>If <strong>SMTP is configured</strong>: You will receive a real email in your Gmail inbox right away!</li>
+        <li>If <strong>SMTP is not configured yet</strong>: Google blocks anonymous emails. To receive real emails in your inbox, go to <strong>Vercel ➡️ Project Settings ➡️ Environment Variables</strong> and add:
+          <br />• <code>ADMIN_EMAIL</code> = <code>khanna.manuj@gmail.com</code>
+          <br />• <code>SMTP_HOST</code> = <code>smtp.gmail.com</code>
+          <br />• <code>SMTP_PORT</code> = <code>587</code>
+          <br />• <code>SMTP_USER</code> = <code>khanna.manuj@gmail.com</code>
+          <br />• <code>SMTP_PASS</code> = <code>(Your 16-character Google App Password)</code>
+        </li>
+      </ol>
+    </div>
+
+    <a href="index.html" class="back-link">&larr; Return to Website Home</a>
+  </div>
+
+  <script>
+    async function runEmailTest() {
+      const btn = document.getElementById("testBtn");
+      const box = document.getElementById("resultBox");
+      const badge = document.getElementById("statusBadge");
+
+      btn.disabled = true;
+      btn.textContent = "Sending Test Notification...";
+      box.classList.add("active");
+      badge.className = "status-badge status-warning";
+      badge.textContent = "Connecting to server...";
+
+      try {
+        const response = await fetch("/api/test-email", { method: "POST" });
+        const data = await response.json();
+
+        document.getElementById("targetEmail").textContent = data.targetEmail || "khanna.manuj@gmail.com";
+        document.getElementById("simPlan").textContent = data.testData ? data.testData.service : "30-Minute Consultation ($51 USD)";
+        document.getElementById("txnId").textContent = data.testData ? data.testData.txnId : "TEST-TXN";
+        document.getElementById("serverMsg").textContent = data.message || "Recorded successfully";
+
+        if (data.smtpConfigured && data.success) {
+          badge.className = "status-badge status-success";
+          badge.textContent = "SUCCESS: Real Email Sent to Gmail!";
+          document.getElementById("smtpStatus").textContent = "Connected & Delivered via " + data.smtpHost;
+        } else if (data.smtpConfigured && !data.success) {
+          badge.className = "status-badge status-error";
+          badge.textContent = "SMTP ERROR: Check App Password";
+          document.getElementById("smtpStatus").textContent = data.message;
+        } else {
+          badge.className = "status-badge status-warning";
+          badge.textContent = "LOGGED: SMTP settings needed for live inbox delivery";
+          document.getElementById("smtpStatus").textContent = "Not set in environment (Logged to server)";
+        }
+      } catch (err) {
+        badge.className = "status-badge status-error";
+        badge.textContent = "Error: " + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Trigger Free Test Payment Again";
+      }
+    }
+  </script>
+</body>
+</html>

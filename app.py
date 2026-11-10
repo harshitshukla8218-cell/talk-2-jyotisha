@@ -71,6 +71,7 @@ STATIC_FILES = {
     "jyotish-logo.jpeg",
     "talk2jyotisha-logo.svg",
     "site-auth.js",
+    "test-payment.html",
 }
 EMAIL_PATTERN = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 PASSWORD_MIN_LENGTH = 6
@@ -1413,6 +1414,39 @@ This notification has been sent to: {admin_email}
         success, msg = _send_payment_email(data)
         admin_email = os.environ.get("ADMIN_EMAIL", "khanna.manuj@gmail.com")
         return jsonify(ok=True, message=msg, notifiedEmail=admin_email)
+
+    @app.route("/api/test-email", methods=["GET", "POST"])
+    @csrf.exempt
+    def test_email():
+        admin_email = os.environ.get("ADMIN_EMAIL", "khanna.manuj@gmail.com")
+        smtp_host = os.environ.get("SMTP_HOST", "")
+        smtp_user = os.environ.get("SMTP_USER", "")
+        smtp_pass = os.environ.get("SMTP_PASS", "")
+
+        test_data = {
+            "name": "Test Client (Zero-Cost Verification)",
+            "email": "test-client@talk2jyotisha.com",
+            "phone": "+91 9876543210",
+            "service": "30-Minute Consultation ($51 USD) - TEST",
+            "advance": "$51 USD",
+            "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "time": "14:30",
+            "txnId": f"TEST-TXN-{uuid.uuid4().hex[:6].upper()}",
+            "message": "Free test payment triggered to verify email delivery without spending real money.",
+            "gatewayUrl": "https://www.advproactsol.com/30-Minute_Consultation.php",
+            "paidOn": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+        }
+
+        success, msg = _send_payment_email(test_data)
+
+        return jsonify(
+            success=success,
+            message=msg,
+            targetEmail=admin_email,
+            smtpConfigured=bool(smtp_host and smtp_user and smtp_pass),
+            smtpHost=smtp_host or "Not configured in environment",
+            testData=test_data,
+        )
 
     @app.get("/<path:filename>")
     def project_file(filename):

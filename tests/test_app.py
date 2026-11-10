@@ -718,3 +718,13 @@ def test_payment_notification_smtp_dispatch(client, monkeypatch):
     assert mock_smtp.login.called
     assert mock_smtp.send_message.called
 
+
+def test_test_email_endpoint(client):
+    response = client.get("/api/test-email")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert "targetEmail" in data
+    assert data["targetEmail"] == "khanna.manuj@gmail.com"
+    assert "testData" in data
+
+
