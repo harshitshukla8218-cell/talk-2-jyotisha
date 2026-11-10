@@ -1328,6 +1328,8 @@ def create_app(test_config=None):
         smtp_from = os.environ.get("SMTP_FROM", smtp_user or "noreply@talk2jyotisha.com")
 
         name = booking_data.get("name") or booking_data.get("fullName") or "Valued Client"
+        dob = booking_data.get("dob") or booking_data.get("dateOfBirth") or "Not provided"
+        address = booking_data.get("address") or "Not provided"
         email = booking_data.get("email") or "Not provided"
         phone = booking_data.get("phone") or "Not provided"
         service = booking_data.get("service") or booking_data.get("product") or "Consultation Plan"
@@ -1348,8 +1350,10 @@ A successful payment / consultation booking has been made on Talk2Jyotisha.com.
 BOOKING & PAYMENT DETAILS
 =======================================================
 Customer Name:      {name}
-Customer Email:     {email}
+Date of Birth (DOB):{dob}
+Address:            {address}
 Phone Number:       {phone}
+Customer Email:     {email}
 Consultation / Item:{service}
 Amount:             {advance}
 Transaction ID:     {txn_id}
@@ -1423,17 +1427,23 @@ This notification has been sent to: {admin_email}
         smtp_user = os.environ.get("SMTP_USER", "")
         smtp_pass = os.environ.get("SMTP_PASS", "")
 
+        custom = {}
+        if request.is_json:
+            custom = request.get_json(silent=True) or {}
+
         test_data = {
-            "name": "Test Client (Zero-Cost Verification)",
-            "email": "test-client@talk2jyotisha.com",
-            "phone": "+91 9876543210",
-            "service": "30-Minute Consultation ($51 USD) - TEST",
-            "advance": "$51 USD",
-            "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
-            "time": "14:30",
-            "txnId": f"TEST-TXN-{uuid.uuid4().hex[:6].upper()}",
-            "message": "Free test payment triggered to verify email delivery without spending real money.",
-            "gatewayUrl": "https://www.advproactsol.com/30-Minute_Consultation.php",
+            "name": custom.get("name") or "Harsh Shukla (Test Client)",
+            "dob": custom.get("dob") or "1995-08-15",
+            "address": custom.get("address") or "New Delhi, India",
+            "email": custom.get("email") or "harshitshukla8218@gmail.com",
+            "phone": custom.get("phone") or "+91 9876543210",
+            "service": custom.get("service") or "30-Minute Consultation ($51 USD)",
+            "advance": custom.get("advance") or "$51 USD",
+            "date": custom.get("date") or datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+            "time": custom.get("time") or "15:00",
+            "txnId": custom.get("txnId") or f"TEST-TXN-{uuid.uuid4().hex[:6].upper()}",
+            "message": custom.get("message") or "Free test payment verification without spending real money.",
+            "gatewayUrl": custom.get("gatewayUrl") or "https://www.advproactsol.com/30-Minute_Consultation.php",
             "paidOn": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
         }
 

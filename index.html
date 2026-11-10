@@ -1206,6 +1206,14 @@
               <input type="email" id="email" placeholder="Enter your email" required />
             </div>
             <div>
+              <label for="dob">Date of Birth (DOB)</label>
+              <input type="date" id="dob" required />
+            </div>
+            <div class="full">
+              <label for="address">Address / City &amp; Country</label>
+              <input type="text" id="address" placeholder="Enter your address or city" required />
+            </div>
+            <div>
               <label for="language">Preferred Language</label>
               <select id="language" required>
                 <option value="">Select language</option>
@@ -1468,27 +1476,34 @@
 
       const name = document.getElementById("name").value.trim();
       const phone = document.getElementById("phone").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const dob = document.getElementById("dob").value;
+      const address = document.getElementById("address").value.trim();
       const service = document.getElementById("service").value;
       const date = document.getElementById("date").value;
       const time = document.getElementById("time").value;
       const advance = document.getElementById("advance").value;
+      const message = document.getElementById("message").value.trim();
 
-      if (!name || !phone || !service || !date || !time || !advance) {
+      if (!name || !phone || !email || !dob || !address || !service || !date || !time || !advance) {
         alert("Please fill all required fields.");
         return;
       }
 
-      pendingBooking = { name, phone, service, date, time, advance };
+      pendingBooking = { name, phone, email, dob, address, service, date, time, advance, message };
 
       showPaymentModal();
     });
 
     function showPaymentModal() {
-      const { name, service, date, time, advance } = pendingBooking;
+      const { name, phone, dob, address, service, date, time, advance } = pendingBooking;
       const targetUrl = PAYMENT_GATEWAYS[service] || "https://www.advproactsol.com/30-Minute_Consultation.php";
 
       document.getElementById("paymentSummary").innerHTML =
         "<div><span>Name</span><span>" + name + "</span></div>" +
+        "<div><span>DOB</span><span>" + (dob || "N/A") + "</span></div>" +
+        "<div><span>Address</span><span>" + (address || "N/A") + "</span></div>" +
+        "<div><span>Phone</span><span>" + phone + "</span></div>" +
         "<div><span>Service</span><span>" + service + "</span></div>" +
         "<div><span>Date</span><span>" + date + "</span></div>" +
         "<div><span>Time</span><span>" + time + "</span></div>" +
