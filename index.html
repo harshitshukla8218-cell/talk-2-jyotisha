@@ -414,7 +414,7 @@
 
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       gap: 20px;
     }
 
@@ -1162,6 +1162,13 @@
     <div class="container">
       <h2 class="section-title">Book a Jyotish Consultation</h2>
       <div class="services-grid">
+        <div class="card" style="border-top-color: #52c41a;">
+          <h3>Free Trial Consultation</h3>
+          <div class="price" style="color: #52c41a;">$0 USD (Free Trial)</div>
+          <p>Instant zero-cost consultation booking to test the appointment and email confirmation flow.</p>
+          <a class="service-btn" href="#booking" onclick="scrollToBooking('Free Trial Consultation')" style="background: linear-gradient(135deg, #1b5e20, #52c41a);">Book Free Trial ($0)</a>
+          <div class="service-action-note"><a href="#booking" onclick="scrollToBooking('Free Trial Consultation')">Instant Free Booking</a></div>
+        </div>
         <div class="card">
           <h3>30-Minute Consultation</h3>
           <div class="price">$51 USD</div>
@@ -1225,6 +1232,7 @@
               <label for="service">Consultation Type</label>
               <select id="service" required>
                 <option value="">Select service</option>
+                <option value="Free Trial Consultation">Free Trial Consultation (Test - $0 USD)</option>
                 <option value="30-Minute Consultation">30-Minute Consultation ($51 USD)</option>
                 <option value="1-Hour Consultation">1-Hour Consultation (1-Hour Plan)</option>
                 <option value="Pay-As-You-Go Consultation">Pay-As-You-Go Consultation ($21 USD)</option>
@@ -1242,6 +1250,7 @@
               <label for="advance">Consultation Fee</label>
               <select id="advance" required>
                 <option value="">Select consultation plan</option>
+                <option value="Free Trial ($0 USD)">Free Trial ($0 USD - No Payment Needed)</option>
                 <option value="$51 USD">$51 USD (30-Minute Consultation)</option>
                 <option value="1-Hour Plan">1-Hour Plan (1-Hour Consultation)</option>
                 <option value="$21 USD">$21 USD (Pay-As-You-Go)</option>
@@ -1312,7 +1321,7 @@
       <div class="modal-amount" id="paymentAmount"></div>
       <div class="modal-actions">
         <button type="button" class="btn-outline" onclick="closeModal('paymentModal')">Cancel</button>
-        <button type="button" class="btn" onclick="processPayment()">Proceed to Payment Gateway</button>
+        <button type="button" class="btn" id="confirmPaymentBtn" onclick="processPayment()">Proceed to Payment Gateway</button>
       </div>
     </div>
   </div>
@@ -1378,6 +1387,7 @@
 
   <script>
     const PAYMENT_GATEWAYS = {
+      "Free Trial Consultation": "FREE_TRIAL",
       "30-Minute Consultation": "https://www.advproactsol.com/30-Minute_Consultation.php",
       "1-Hour Consultation": "https://www.advproactsol.com/1-Hour_Consultation.php",
       "Pay-As-You-Go Consultation": "https://www.advproactsol.com/Pay-As-You-Go.php",
@@ -1399,7 +1409,9 @@
     const advanceSelectEl = document.getElementById("advance");
     if (serviceSelectEl && advanceSelectEl) {
       serviceSelectEl.addEventListener("change", function () {
-        if (this.value === "30-Minute Consultation") {
+        if (this.value === "Free Trial Consultation") {
+          advanceSelectEl.value = "Free Trial ($0 USD)";
+        } else if (this.value === "30-Minute Consultation") {
           advanceSelectEl.value = "$51 USD";
         } else if (this.value === "1-Hour Consultation") {
           advanceSelectEl.value = "1-Hour Plan";
@@ -1497,6 +1509,7 @@
 
     function showPaymentModal() {
       const { name, phone, dob, address, service, date, time, advance } = pendingBooking;
+      const isFree = service === "Free Trial Consultation";
       const targetUrl = PAYMENT_GATEWAYS[service] || "https://www.advproactsol.com/30-Minute_Consultation.php";
 
       document.getElementById("paymentSummary").innerHTML =
@@ -1507,8 +1520,14 @@
         "<div><span>Service</span><span>" + service + "</span></div>" +
         "<div><span>Date</span><span>" + date + "</span></div>" +
         "<div><span>Time</span><span>" + time + "</span></div>" +
-        "<div><span>Gateway</span><span>" + targetUrl + "</span></div>";
-      document.getElementById("paymentAmount").textContent = advance;
+        (isFree
+          ? "<div><span>Mode</span><span style=\"color:#52c41a;font-weight:700;\">Free Trial - Zero Payment</span></div>"
+          : "<div><span>Gateway</span><span>" + targetUrl + "</span></div>");
+      document.getElementById("paymentAmount").textContent = isFree ? "FREE ($0 USD)" : advance;
+      const confirmBtn = document.getElementById("confirmPaymentBtn");
+      if (confirmBtn) {
+        confirmBtn.textContent = isFree ? "Confirm Free Trial Booking ($0)" : "Proceed to Payment Gateway";
+      }
 
       openModal("paymentModal");
     }
@@ -1535,10 +1554,11 @@
     function processPayment() {
       if (!pendingBooking) return;
 
-      const txnId = "TXN" + Date.now();
+      const isFree = pendingBooking.service === "Free Trial Consultation";
+      const txnId = (isFree ? "FREE-TRIAL-" : "TXN") + Date.now();
       const paidOn = new Date().toLocaleString();
       const email = getSession();
-      const targetGateway = PAYMENT_GATEWAYS[pendingBooking.service] || "https://www.advproactsol.com/30-Minute_Consultation.php";
+      const targetGateway = isFree ? "Free Trial (Zero Cost)" : (PAYMENT_GATEWAYS[pendingBooking.service] || "https://www.advproactsol.com/30-Minute_Consultation.php");
 
       // Dispatch email notification to backend (sent to khanna.manuj@gmail.com)
       fetch("/api/payment-notification", {
@@ -1555,24 +1575,56 @@
         console.warn("Payment notification error:", err);
       });
 
+      // Browser direct fallback to FormSubmit to deliver email to khanna.manuj@gmail.com without credentials
+      try {
+        fetch("https://formsubmit.co/ajax/khanna.manuj@gmail.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify({
+            _subject: (isFree ? "[FREE TRIAL TEST] " : "[BOOKING PAYMENT] ") + pendingBooking.service + " - " + pendingBooking.name,
+            customer_name: pendingBooking.name,
+            dob: pendingBooking.dob,
+            address: pendingBooking.address,
+            phone: pendingBooking.phone,
+            customer_email: pendingBooking.email,
+            plan_service: pendingBooking.service,
+            amount: isFree ? "$0 USD (Free Trial)" : pendingBooking.advance,
+            booking_date: pendingBooking.date,
+            booking_time: pendingBooking.time,
+            message_concern: pendingBooking.message || "None",
+            transaction_id: txnId,
+            paid_timestamp: paidOn
+          })
+        }).catch(function (err) {
+          console.log("Direct fallback notice:", err);
+        });
+      } catch (e) {}
+
       const bookings = getBookings();
       bookings.push({ email, ...pendingBooking, txnId, paidOn, gatewayUrl: targetGateway });
       localStorage.setItem(BOOKINGS_KEY, JSON.stringify(bookings));
 
       closeModal("paymentModal");
 
-      // Open payment gateway in a new tab
-      window.open(targetGateway, "_blank", "noopener,noreferrer");
+      // Open payment gateway in a new tab if paid
+      if (!isFree) {
+        window.open(targetGateway, "_blank", "noopener,noreferrer");
+      }
 
-      document.getElementById("txnId").textContent = "Appointment reserved: " + txnId;
+      document.getElementById("txnId").textContent = (isFree ? "Free Trial Confirmed: " : "Appointment reserved: ") + txnId;
       document.getElementById("creditSummary").innerHTML =
         "<div><span>Name</span><span>" + pendingBooking.name + "</span></div>" +
+        "<div><span>DOB</span><span>" + (pendingBooking.dob || "N/A") + "</span></div>" +
+        "<div><span>Address</span><span>" + (pendingBooking.address || "N/A") + "</span></div>" +
+        "<div><span>Phone</span><span>" + pendingBooking.phone + "</span></div>" +
         "<div><span>Service</span><span>" + pendingBooking.service + "</span></div>" +
         "<div><span>Date</span><span>" + pendingBooking.date + "</span></div>" +
         "<div><span>Time</span><span>" + pendingBooking.time + "</span></div>" +
-        "<div><span>Email Status</span><span>Confirmation notification dispatched</span></div>" +
-        "<div><span>Gateway Link</span><span><a href=\"" + targetGateway + "\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:#f6c76a;text-decoration:underline;\">Open Payment Gateway</a></span></div>";
-      document.getElementById("creditAmount").textContent = "Amount: " + pendingBooking.advance;
+        "<div><span>Email Status</span><span style=\"color:#52c41a;font-weight:700;\">Email notification dispatched to khanna.manuj@gmail.com</span></div>" +
+        (isFree
+          ? "<div><span>Payment</span><span style=\"color:#52c41a;font-weight:700;\">Free Trial - No Payment Charged ($0)</span></div>"
+          : "<div><span>Gateway Link</span><span><a href=\"" + targetGateway + "\" target=\"_blank\" rel=\"noopener noreferrer\" style=\"color:#f6c76a;text-decoration:underline;\">Open Payment Gateway</a></span></div>");
+      document.getElementById("creditAmount").textContent = isFree ? "Free Trial ($0 USD)" : ("Amount: " + pendingBooking.advance);
 
       openModal("creditModal");
 

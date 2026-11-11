@@ -51,6 +51,7 @@
       <div class="form-group full">
         <label for="plan">Consultation Plan</label>
         <select id="plan" required>
+          <option value="Free Trial Consultation ($0 USD)">Free Trial Consultation ($0 USD)</option>
           <option value="30-Minute Consultation ($51 USD)">30-Minute Consultation ($51 USD)</option>
           <option value="1-Hour Consultation (1-Hour Plan)">1-Hour Consultation (1-Hour Plan)</option>
           <option value="Pay-As-You-Go Consultation ($21 USD)">Pay-As-You-Go Consultation ($21 USD)</option>
@@ -153,7 +154,7 @@
         dob: document.getElementById("dob").value,
         email: document.getElementById("email").value.trim(),
         address: document.getElementById("address").value.trim(),
-        advance: document.getElementById("plan").value.includes("$51") ? "$51 USD" : (document.getElementById("plan").value.includes("$21") ? "$21 USD" : "1-Hour Plan")
+        advance: document.getElementById("plan").value.includes("$0") ? "$0 USD (Free Trial)" : (document.getElementById("plan").value.includes("$51") ? "$51 USD" : (document.getElementById("plan").value.includes("$21") ? "$21 USD" : "1-Hour Plan"))
       };
 
       try {

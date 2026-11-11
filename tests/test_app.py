@@ -728,3 +728,25 @@ def test_test_email_endpoint(client):
     assert "testData" in data
 
 
+def test_free_trial_consultation_booking_notification(client):
+    payload = {
+        "name": "Free Trial Tester",
+        "email": "tester@example.com",
+        "phone": "+91 9123456789",
+        "dob": "1998-05-20",
+        "address": "Varanasi, India",
+        "service": "Free Trial Consultation",
+        "advance": "Free Trial ($0 USD)",
+        "txnId": "FREE-TRIAL-987654",
+        "date": "2026-11-20",
+        "time": "14:00",
+        "message": "Testing zero-cost free trial booking flow",
+    }
+    response = client.post("/api/payment-notification", json=payload)
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data["ok"] is True
+    assert data["notifiedEmail"] == "khanna.manuj@gmail.com"
+
+
+
